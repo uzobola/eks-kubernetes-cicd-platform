@@ -1,0 +1,3 @@
+admin_cidr = "203.0.113.10/32"
+
+terraform_admin_principal_arn = "arn:aws:iam::123456789012:role/TerraformAdmin"

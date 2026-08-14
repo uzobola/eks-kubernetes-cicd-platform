@@ -6,6 +6,7 @@ backend.hcl
 *.tfplan
 crash.log
 crash.*.log
+*.tfvars
 
 # Python
 __pycache__/

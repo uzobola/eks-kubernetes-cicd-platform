@@ -21,3 +21,13 @@ variable "vpc_cidr" {
   type        = string
   default     = "10.20.0.0/16"
 }
+
+variable "admin_cidr" {
+  description = "Public IPv4 CIDR allowed to reach the EKS public API endpoint"
+  type        = string
+}
+
+variable "terraform_admin_principal_arn" {
+  description = "Stable IAM role or user ARN granted administrative EKS access"
+  type        = string
+}
