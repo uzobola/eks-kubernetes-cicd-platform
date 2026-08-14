@@ -1,4 +1,5 @@
 # Terraform
+backend.hcl
 .terraform/
 *.tfstate
 *.tfstate.*
