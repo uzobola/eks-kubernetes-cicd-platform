@@ -43,3 +43,48 @@ output "vpc_cni_role_arn" {
   description = "Dedicated IAM role used by the VPC CNI"
   value       = aws_iam_role.vpc_cni.arn
 }
+
+output "load_balancer_controller_role_arn" {
+  description = "IAM role used by AWS Load Balancer Controller"
+  value       = aws_iam_role.load_balancer_controller.arn
+}
+
+output "cluster_autoscaler_role_arn" {
+  description = "IAM role used by Kubernetes Cluster Autoscaler"
+  value       = aws_iam_role.cluster_autoscaler.arn
+}
+
+output "jenkins_role_arn" {
+  description = "IAM role used by Jenkins"
+  value       = aws_iam_role.jenkins.arn
+}
+
+output "jenkins_instance_id" {
+  description = "Jenkins EC2 instance ID"
+  value       = aws_instance.jenkins.id
+}
+
+output "jenkins_public_ip" {
+  description = "Jenkins public IPv4 address"
+  value       = aws_instance.jenkins.public_ip
+}
+
+output "jenkins_private_ip" {
+  description = "Jenkins private IPv4 address"
+  value       = aws_instance.jenkins.private_ip
+}
+
+output "jenkins_url" {
+  description = "Jenkins administration URL"
+  value       = "http://${aws_instance.jenkins.public_ip}:8080"
+}
+
+output "ansible_transport_bucket_name" {
+  description = "S3 bucket used for temporary Ansible SSM file transport"
+  value       = aws_s3_bucket.ansible_transport.bucket
+}
+
+output "ansible_execution_role_arn" {
+  description = "IAM role assumed by the Ansible controller"
+  value       = aws_iam_role.ansible_execution.arn
+}

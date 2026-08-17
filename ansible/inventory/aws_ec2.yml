@@ -1,0 +1,16 @@
+---
+plugin: amazon.aws.aws_ec2
+
+regions:
+  - us-east-1
+
+filters:
+  instance-state-name: running
+  tag:Role: jenkins
+  tag:Name: eks-kubernetes-cicd-jenkins
+
+hostnames:
+  - instance-id
+
+compose:
+  ansible_host: instance_id

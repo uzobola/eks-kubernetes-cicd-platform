@@ -1,0 +1,50 @@
+apiVersion: v1
+kind: Pod
+
+metadata:
+  name: hpa-load-generator
+  namespace: challenge-app
+
+spec:
+  restartPolicy: Never
+  automountServiceAccountToken: false
+
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 10001
+    runAsGroup: 10001
+    seccompProfile:
+      type: RuntimeDefault
+
+  containers:
+    - name: load-generator
+      image: busybox:1.36.1
+
+      command:
+        - /bin/sh
+        - -c
+
+      args:
+        - |
+          echo "Starting HTTP load against challenge-app..."
+          for i in 1 2 3 4 5 6 7 8 9 10 11 12; do
+            while true; do
+              wget -q -O- http://challenge-app/ > /dev/null
+            done &
+          done
+          wait
+
+      securityContext:
+        allowPrivilegeEscalation: false
+        readOnlyRootFilesystem: true
+        capabilities:
+          drop:
+            - ALL
+
+      resources:
+        requests:
+          cpu: 25m
+          memory: 16Mi
+        limits:
+          cpu: 500m
+          memory: 64Mi

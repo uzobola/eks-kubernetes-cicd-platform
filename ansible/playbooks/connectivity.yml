@@ -1,0 +1,29 @@
+---
+- name: Validate Jenkins SSM connectivity
+  hosts: all
+  gather_facts: false
+
+  tasks:
+    - name: Wait for SSM connection
+      ansible.builtin.wait_for_connection:
+        timeout: 120
+
+    - name: Read operating system identity
+      ansible.builtin.command:
+        cmd: cat /etc/os-release
+      register: os_release
+      changed_when: false
+
+    - name: Display operating system
+      ansible.builtin.debug:
+        var: os_release.stdout_lines
+
+    - name: Read current remote identity
+      ansible.builtin.command:
+        cmd: whoami
+      register: remote_identity
+      changed_when: false
+
+    - name: Display remote identity
+      ansible.builtin.debug:
+        var: remote_identity.stdout
