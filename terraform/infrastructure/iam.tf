@@ -146,6 +146,7 @@ resource "aws_iam_role_policy_attachment" "load_balancer_controller" {
 # --------------------------------------------------
 
 data "aws_iam_policy_document" "cluster_autoscaler_permissions" {
+  #checkov:skip=CKV_AWS_356:AWS EKS Cluster Autoscaler least-privilege guidance uses Resource "*" with cluster-specific ownership tag conditions for scaling actions; discovery APIs require wildcard resource scope
 
   statement {
     sid    = "AllowScopedNodeGroupScaling"
@@ -524,15 +525,28 @@ data "aws_iam_policy_document" "ansible_execution_permissions" {
   # ------------------------------------------------
 
   statement {
-    sid    = "AllowSSMConnectionDiscovery"
+    sid    = "AllowSSMInstanceDiscovery"
     effect = "Allow"
 
     actions = [
-      "ssm:DescribeInstanceInformation",
+      "ssm:DescribeInstanceInformation"
+    ]
+
+    # AWS does not support resource-level permissions for this action.
+    resources = ["*"]
+  }
+
+  statement {
+    sid    = "AllowJenkinsConnectionStatus"
+    effect = "Allow"
+
+    actions = [
       "ssm:GetConnectionStatus"
     ]
 
-    resources = ["*"]
+    resources = [
+      aws_instance.jenkins.arn
+    ]
   }
 }
 

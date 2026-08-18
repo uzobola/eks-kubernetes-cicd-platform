@@ -3,6 +3,11 @@ resource "random_id" "state_suffix" {
 }
 
 resource "aws_s3_bucket" "terraform_state" {
+  #checkov:skip=CKV_AWS_18:Dedicated S3 server-access logging is outside this challenge scope; production target is centralized audit logging for state-bucket access
+  #checkov:skip=CKV2_AWS_62:Terraform state has no event-driven consumer requiring S3 event notifications
+  #checkov:skip=CKV_AWS_144:Cross-region state replication is a production DR policy decision; versioning provides recovery for this single-region challenge environment
+
+
   bucket = "${var.project_name}-tfstate-${random_id.state_suffix.hex}"
 
   lifecycle {
@@ -18,13 +23,38 @@ resource "aws_s3_bucket_versioning" "terraform_state" {
   }
 }
 
+resource "aws_s3_bucket_lifecycle_configuration" "terraform_state" {
+  bucket = aws_s3_bucket.terraform_state.id
+
+  depends_on = [
+    aws_s3_bucket_versioning.terraform_state
+  ]
+
+  rule {
+    id     = "manage-state-history"
+    status = "Enabled"
+
+    filter {}
+
+    noncurrent_version_expiration {
+      noncurrent_days = 90
+    }
+
+    abort_incomplete_multipart_upload {
+      days_after_initiation = 7
+    }
+  }
+}
+
 resource "aws_s3_bucket_server_side_encryption_configuration" "terraform_state" {
   bucket = aws_s3_bucket.terraform_state.id
 
   rule {
     apply_server_side_encryption_by_default {
-      sse_algorithm = "AES256"
+      sse_algorithm = "aws:kms"
     }
+
+    bucket_key_enabled = true
   }
 }
 

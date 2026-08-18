@@ -6,6 +6,9 @@
 # --------------------------------------------------
 
 resource "aws_eks_cluster" "main" {
+  #checkov:skip=CKV_AWS_58:EKS 1.35 receives default KMS v2 envelope encryption for all Kubernetes API data on EKS 1.28+; customer-managed KMS is optional
+  #checkov:skip=CKV_AWS_39:Private endpoint is enabled and public API access is restricted to the operator admin /32; AWS documents this as a supported restricted-access configuration
+
   name     = var.cluster_name
   role_arn = aws_iam_role.eks_cluster.arn
   version  = "1.35"

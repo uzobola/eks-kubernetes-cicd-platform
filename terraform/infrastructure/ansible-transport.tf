@@ -9,6 +9,12 @@ locals {
 }
 
 resource "aws_s3_bucket" "ansible_transport" {
+  #checkov:skip=CKV_AWS_145:Temporary Ansible SSM transport objects are encrypted with SSE-S3/AES256; SSE-KMS is a production policy option rather than a functional requirement
+  #checkov:skip=CKV_AWS_18:Ephemeral one-day transport bucket does not use a dedicated persistent S3 access-log bucket in this challenge environment
+  #checkov:skip=CKV2_AWS_62:Temporary Ansible transport objects have no event-driven consumer requiring S3 notifications
+  #checkov:skip=CKV_AWS_21:Ansible aws_ssm documentation recommends versioning remain disabled because deleted transport files may contain secrets and persist in version history
+  #checkov:skip=CKV_AWS_144:Cross-region replication conflicts with the ephemeral minimal-copy design of the temporary Ansible transport bucket
+
   bucket        = local.ansible_transport_bucket_name
   force_destroy = true
 

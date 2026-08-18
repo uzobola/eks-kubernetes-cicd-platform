@@ -205,3 +205,20 @@ resource "aws_route_table_association" "private_b" {
   subnet_id      = aws_subnet.private_b.id
   route_table_id = aws_route_table.private_b.id
 }
+
+# --------------------------------------------------
+# Default Security Group
+# --------------------------------------------------
+# The platform uses explicitly managed security groups.
+# The VPC default security group permits no ingress or egress.
+
+resource "aws_default_security_group" "default" {
+  vpc_id = aws_vpc.main.id
+
+  ingress = []
+  egress  = []
+
+  tags = {
+    Name = "${var.project_name}-default-sg-restricted"
+  }
+}

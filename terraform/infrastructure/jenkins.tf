@@ -60,6 +60,8 @@ resource "aws_security_group" "jenkins" {
 resource "aws_vpc_security_group_egress_rule" "jenkins_egress" {
   security_group_id = aws_security_group.jenkins.id
 
+  description = "Allow Jenkins outbound access to AWS APIs, ECR, EKS, GitHub, and package repositories"
+
   cidr_ipv4   = "0.0.0.0/0"
   ip_protocol = "-1"
 }
@@ -70,8 +72,13 @@ resource "aws_vpc_security_group_egress_rule" "jenkins_egress" {
 # --------------------------------------------------
 
 resource "aws_instance" "jenkins" {
+  #checkov:skip=CKV_AWS_135:c7i-flex.large is EBS-optimized by default according to AWS; explicitly enabling it would force unnecessary instance replacement
+  #checkov:skip=CKV_AWS_88:Jenkins has no inbound security-group rules and administration is SSM-only; production design places the controller in a private subnet without a public IP
+
   ami           = data.aws_ami.amazon_linux_2023.id
   instance_type = "c7i-flex.large"
+
+  monitoring = true
 
   subnet_id = aws_subnet.public_a.id
 
