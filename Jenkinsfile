@@ -159,5 +159,154 @@ pipeline {
                 '''
             }
         }
+
+                stage('EKS Authentication') {
+            steps {
+                sh '''
+                    set -eu
+
+                    mkdir -p "$WORKSPACE/.kube"
+                    export KUBECONFIG="$WORKSPACE/.kube/config"
+
+                    echo "Generating temporary EKS kubeconfig..."
+
+                    aws eks update-kubeconfig \
+                      --region "$AWS_REGION" \
+                      --name "$EKS_CLUSTER_NAME" \
+                      --kubeconfig "$KUBECONFIG"
+
+                    echo "Verifying Jenkins Kubernetes authorization..."
+
+                    kubectl auth can-i update deployments \
+                      --namespace challenge-app
+
+                    kubectl auth can-i delete nodes
+
+                    echo "EKS authentication verified."
+                '''
+            }
+        }
+
+        stage('Helm Deploy') {
+            steps {
+                sh '''
+                    set -eu
+                    export KUBECONFIG="$WORKSPACE/.kube/config"
+
+                    echo "Deploying image:"
+                    echo "$IMAGE_URI"
+
+                    helm upgrade --install challenge-app \
+                      helm/challenge-app \
+                      --namespace challenge-app \
+                      --set image.repository="$ECR_REPOSITORY" \
+                      --set image.tag="$IMAGE_TAG" \
+                      --atomic \
+                      --wait \
+                      --timeout 5m
+
+                    echo "Helm deployment completed."
+                '''
+            }
+        }
+
+        stage('Rollout Verification') {
+            steps {
+                sh '''
+                    set -eu
+                    export KUBECONFIG="$WORKSPACE/.kube/config"
+
+                    echo "Verifying Kubernetes rollout..."
+
+                    kubectl rollout status \
+                      deployment/challenge-app \
+                      --namespace challenge-app \
+                      --timeout=180s
+
+                    echo
+                    echo "Deployed image:"
+
+                    kubectl get deployment challenge-app \
+                      --namespace challenge-app \
+                      -o jsonpath='{.spec.template.spec.containers[0].image}'
+
+                    echo
+                    echo
+
+                    EXPECTED_IMAGE="$IMAGE_URI"
+
+                    ACTUAL_IMAGE=$(kubectl get deployment challenge-app \
+                      --namespace challenge-app \
+                      -o jsonpath='{.spec.template.spec.containers[0].image}')
+
+                    if [ "$ACTUAL_IMAGE" != "$EXPECTED_IMAGE" ]; then
+                        echo "ERROR: deployed image does not match pipeline image."
+                        echo "Expected: $EXPECTED_IMAGE"
+                        echo "Actual:   $ACTUAL_IMAGE"
+                        exit 1
+                    fi
+
+                    echo "Rollout verification passed."
+                '''
+            }
+        }
+
+        stage('Live Application Test') {
+            steps {
+                sh '''
+                    set -eu
+                    export KUBECONFIG="$WORKSPACE/.kube/config"
+
+                    ALB_HOST=$(kubectl get ingress challenge-app \
+                      --namespace challenge-app \
+                      -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+
+                    if [ -z "$ALB_HOST" ]; then
+                        echo "ERROR: ALB hostname not available."
+                        exit 1
+                    fi
+
+                    echo "Testing live application:"
+                    echo "http://$ALB_HOST"
+
+                    ATTEMPT=1
+
+                    while [ "$ATTEMPT" -le 12 ]; do
+                        if curl --fail --silent --show-error \
+                          "http://$ALB_HOST/health"; then
+                            echo
+                            echo "Health endpoint passed."
+                            break
+                        fi
+
+                        if [ "$ATTEMPT" -eq 12 ]; then
+                            echo "ERROR: live health check failed."
+                            exit 1
+                        fi
+
+                        echo "Waiting for application... attempt $ATTEMPT/12"
+                        ATTEMPT=$((ATTEMPT + 1))
+                        sleep 10
+                    done
+
+                    echo "Validating application response..."
+
+                    curl --fail --silent \
+                      "http://$ALB_HOST/" \
+                      | grep -F "Congratulations Challenge Completed !"
+
+                    echo
+                    echo "Live application test passed."
+                '''
+            }
+        }
+
+        post {
+            always {
+                sh '''
+                    rm -rf "$WORKSPACE/.kube" || true
+                '''
+            }
+    }
     }
 }
