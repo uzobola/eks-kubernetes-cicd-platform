@@ -1,0 +1,37 @@
+---
+- name: Import Jenkins repository signing key
+  become: true
+  ansible.builtin.rpm_key:
+    key: https://pkg.jenkins.io/rpm-stable/jenkins.io-2026.key
+    state: present
+
+- name: Configure Jenkins LTS repository
+  become: true
+  ansible.builtin.get_url:
+    url: https://pkg.jenkins.io/rpm-stable/jenkins.repo
+    dest: /etc/yum.repos.d/jenkins.repo
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Install Jenkins
+  become: true
+  ansible.builtin.dnf:
+    name: jenkins
+    state: present
+    update_cache: true
+  notify: Restart Jenkins
+
+- name: Enable and start Jenkins
+  become: true
+  ansible.builtin.systemd_service:
+    name: jenkins
+    enabled: true
+    state: started
+
+- name: Wait for Jenkins to listen on port 8080
+  ansible.builtin.wait_for:
+    host: 127.0.0.1
+    port: 8080
+    state: started
+    timeout: 120

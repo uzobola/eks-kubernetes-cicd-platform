@@ -1,0 +1,47 @@
+---
+- name: Install Docker
+  become: true
+  ansible.builtin.dnf:
+    name: docker
+    state: present
+
+- name: Enable and start Docker
+  become: true
+  ansible.builtin.systemd_service:
+    name: docker
+    enabled: true
+    state: started
+
+- name: Grant Jenkins access to Docker
+  become: true
+  ansible.builtin.user:
+    name: jenkins
+    groups:
+      - docker
+    append: true
+  notify: Restart Jenkins
+
+- name: Apply Jenkins group membership
+  ansible.builtin.meta: flush_handlers
+
+- name: Verify Jenkins belongs to Docker group
+  ansible.builtin.command:
+    cmd: id jenkins
+  register: jenkins_identity
+  changed_when: false
+
+- name: Display Jenkins Linux identity
+  ansible.builtin.debug:
+    var: jenkins_identity.stdout
+
+- name: Verify Jenkins can access Docker daemon
+  become: true
+  become_user: jenkins
+  ansible.builtin.command:
+    cmd: docker info
+  register: docker_info
+  changed_when: false
+
+- name: Display Docker server version
+  ansible.builtin.debug:
+    msg: "{{ docker_info.stdout_lines | select('search', 'Server Version') | list }}"

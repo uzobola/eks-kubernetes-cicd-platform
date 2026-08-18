@@ -1,0 +1,27 @@
+---
+- name: Download Helm archive
+  become: true
+  ansible.builtin.get_url:
+    url: "https://get.helm.sh/helm-{{ helm_version }}-linux-amd64.tar.gz"
+    dest: "/tmp/helm-{{ helm_version }}-linux-amd64.tar.gz"
+    mode: "0644"
+    checksum: >-
+      sha256:https://get.helm.sh/helm-{{ helm_version }}-linux-amd64.tar.gz.sha256sum
+
+- name: Extract Helm archive
+  become: true
+  ansible.builtin.unarchive:
+    src: "/tmp/helm-{{ helm_version }}-linux-amd64.tar.gz"
+    dest: /tmp
+    remote_src: true
+    creates: /tmp/linux-amd64/helm
+
+- name: Install Helm binary
+  become: true
+  ansible.builtin.copy:
+    src: /tmp/linux-amd64/helm
+    dest: /usr/local/bin/helm
+    owner: root
+    group: root
+    mode: "0755"
+    remote_src: true

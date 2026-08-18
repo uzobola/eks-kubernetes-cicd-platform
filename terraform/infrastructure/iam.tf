@@ -450,7 +450,7 @@ data "aws_iam_policy_document" "ansible_execution_permissions" {
     ]
   }
 
-    # ------------------------------------------------
+  # ------------------------------------------------
   # Discover Jenkins EC2 instance for dynamic inventory
   # ------------------------------------------------
 
@@ -479,7 +479,8 @@ data "aws_iam_policy_document" "ansible_execution_permissions" {
 
     resources = [
       aws_instance.jenkins.arn,
-      "arn:aws:ssm:${var.aws_region}:${data.aws_caller_identity.current.account_id}:document/SSM-SessionManagerRunShell"
+      "arn:aws:ssm:${var.aws_region}:${data.aws_caller_identity.current.account_id}:document/SSM-SessionManagerRunShell",
+      "arn:aws:ssm:${var.aws_region}::document/AWS-StartPortForwardingSession"
     ]
   }
 

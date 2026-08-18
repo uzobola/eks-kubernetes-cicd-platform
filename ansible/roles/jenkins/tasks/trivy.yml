@@ -1,0 +1,30 @@
+---
+- name: Remove unused Trivy repository configuration
+  become: true
+  ansible.builtin.file:
+    path: /etc/yum.repos.d/trivy.repo
+    state: absent
+
+- name: Import Trivy RPM signing key
+  become: true
+  ansible.builtin.rpm_key:
+    key: https://aquasecurity.github.io/trivy-repo/rpm/public.key
+    state: present
+
+- name: Download pinned Trivy RPM
+  become: true
+  ansible.builtin.get_url:
+    url: >-
+      https://github.com/aquasecurity/trivy/releases/download/v{{ trivy_version }}/trivy_{{ trivy_version }}_Linux-64bit.rpm
+    dest: "/tmp/trivy_{{ trivy_version }}_Linux-64bit.rpm"
+    owner: root
+    group: root
+    mode: "0644"
+    checksum: >-
+      sha256:https://github.com/aquasecurity/trivy/releases/download/v{{ trivy_version }}/trivy_{{ trivy_version }}_checksums.txt
+
+- name: Install pinned Trivy RPM
+  become: true
+  ansible.builtin.dnf:
+    name: "/tmp/trivy_{{ trivy_version }}_Linux-64bit.rpm"
+    state: present

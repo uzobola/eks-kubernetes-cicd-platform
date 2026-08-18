@@ -1,0 +1,53 @@
+---
+- name: Validate Jenkins controller toolchain
+  hosts: all
+  gather_facts: false
+
+  vars:
+    tool_checks:
+      - name: Java
+        command: java -version
+
+      - name: Jenkins
+        command: jenkins --version
+
+      - name: Docker
+        command: docker --version
+
+      - name: AWS CLI
+        command: aws --version
+
+      - name: kubectl
+        command: kubectl version --client
+
+      - name: Helm
+        command: helm version --short
+
+      - name: Trivy
+        command: trivy --version
+
+      - name: Checkov
+        command: checkov --version
+
+  tasks:
+    - name: Validate installed tools
+      ansible.builtin.command:
+        cmd: "{{ item.command }}"
+      loop: "{{ tool_checks }}"
+      loop_control:
+        label: "{{ item.name }}"
+      register: tool_validation
+      changed_when: false
+
+    - name: Display toolchain validation
+      ansible.builtin.debug:
+        msg: >-
+          {{ item.item.name }}:
+          {{
+            (item.stdout | default('') | trim)
+            if (item.stdout | default('') | trim | length > 0)
+            else (item.stderr | default('') | trim)
+          }}
+      loop: "{{ tool_validation.results }}"
+      loop_control:
+        label: "{{ item.item.name }}"

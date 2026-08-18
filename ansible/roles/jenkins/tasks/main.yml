@@ -1,0 +1,33 @@
+---
+- name: Configure base packages
+  ansible.builtin.import_tasks: packages.yml
+
+- name: Configure Jenkins
+  ansible.builtin.import_tasks: jenkins.yml
+
+- name: Configure Docker
+  ansible.builtin.import_tasks: docker.yml
+
+- name: Configure base packages
+  ansible.builtin.import_tasks: packages.yml
+
+- name: Configure Jenkins
+  ansible.builtin.import_tasks: jenkins.yml
+
+- name: Configure Docker
+  ansible.builtin.import_tasks: docker.yml
+
+- name: Configure kubectl
+  ansible.builtin.import_tasks: kubectl.yml
+
+- name: Configure Helm
+  ansible.builtin.import_tasks: helm.yml
+
+- name: Configure Trivy
+  ansible.builtin.import_tasks: trivy.yml
+
+- name: Configure Checkov
+  ansible.builtin.import_tasks: checkov.yml  
+
+- name: Configure GitHub SSH trust
+  ansible.builtin.import_tasks: github-host.yml

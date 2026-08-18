@@ -1,0 +1,27 @@
+---
+- name: Create Jenkins SSH configuration directory
+  become: true
+  ansible.builtin.file:
+    path: /var/lib/jenkins/.ssh
+    state: directory
+    owner: jenkins
+    group: jenkins
+    mode: "0700"
+
+- name: Trust GitHub ED25519 SSH host key
+  become: true
+  ansible.builtin.known_hosts:
+    path: /var/lib/jenkins/.ssh/known_hosts
+    name: github.com
+    key: >-
+      github.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2l9GKJl
+    state: present
+
+- name: Secure Jenkins known_hosts file
+  become: true
+  ansible.builtin.file:
+    path: /var/lib/jenkins/.ssh/known_hosts
+    owner: jenkins
+    group: jenkins
+    mode: "0600"
+    state: file

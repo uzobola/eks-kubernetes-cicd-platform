@@ -9,3 +9,12 @@ ansible_aws_ssm_bucket_name: >-
 ansible_aws_ssm_bucket_sse_mode: AES256
 
 ansible_python_interpreter: /usr/bin/python3
+
+kubectl_version: "1.35.3"
+kubectl_release_date: "2026-04-08"
+
+helm_version: "v3.21.3"
+
+trivy_version: "0.74.0"
+
+checkov_version: "3.3.8"

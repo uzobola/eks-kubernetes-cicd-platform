@@ -1,0 +1,30 @@
+---
+- name: Install Checkov Python runtime
+  become: true
+  ansible.builtin.dnf:
+    name:
+      - python3.12
+      - python3.12-pip
+    state: present
+
+- name: Create Checkov virtual environment
+  become: true
+  ansible.builtin.command:
+    cmd: python3.12 -m venv /opt/checkov
+    creates: /opt/checkov/bin/python
+
+- name: Install pinned Checkov version
+  become: true
+  ansible.builtin.pip:
+    name: "checkov=={{ checkov_version }}"
+    executable: /opt/checkov/bin/pip
+
+- name: Expose Checkov command
+  become: true
+  ansible.builtin.file:
+    src: /opt/checkov/bin/checkov
+    dest: /usr/local/bin/checkov
+    state: link
+    owner: root
+    group: root
+    

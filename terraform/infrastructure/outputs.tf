@@ -75,8 +75,8 @@ output "jenkins_private_ip" {
 }
 
 output "jenkins_url" {
-  description = "Jenkins administration URL"
-  value       = "http://${aws_instance.jenkins.public_ip}:8080"
+  description = "Jenkins URL while an SSM port-forwarding session is active"
+  value       = "http://localhost:8080"
 }
 
 output "ansible_transport_bucket_name" {

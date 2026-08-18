@@ -1,0 +1,7 @@
+---
+- name: Configure Jenkins controller
+  hosts: all
+  gather_facts: true
+
+  roles:
+    - role: jenkins

@@ -1,0 +1,12 @@
+---
+- name: Install kubectl
+  become: true
+  ansible.builtin.get_url:
+    url: >-
+      https://s3.us-west-2.amazonaws.com/amazon-eks/{{ kubectl_version }}/{{ kubectl_release_date }}/bin/linux/amd64/kubectl
+    dest: /usr/local/bin/kubectl
+    mode: "0755"
+    owner: root
+    group: root
+    checksum: >-
+      sha256:https://s3.us-west-2.amazonaws.com/amazon-eks/{{ kubectl_version }}/{{ kubectl_release_date }}/bin/linux/amd64/kubectl.sha256

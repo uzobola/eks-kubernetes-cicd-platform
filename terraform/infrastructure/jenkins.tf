@@ -55,19 +55,6 @@ resource "aws_security_group" "jenkins" {
 }
 
 
-# Jenkins UI - administrator IP only
-resource "aws_vpc_security_group_ingress_rule" "jenkins_ui" {
-  security_group_id = aws_security_group.jenkins.id
-
-  description = "Jenkins UI from administrator IP"
-
-  cidr_ipv4   = var.admin_cidr
-  from_port   = 8080
-  to_port     = 8080
-  ip_protocol = "tcp"
-}
-
-
 # Outbound access for package installation, AWS APIs,
 # ECR, GitHub, EKS, etc.
 resource "aws_vpc_security_group_egress_rule" "jenkins_egress" {
@@ -106,6 +93,12 @@ resource "aws_instance" "jenkins" {
     volume_size           = 30
     encrypted             = true
     delete_on_termination = true
+  }
+
+  lifecycle {
+    ignore_changes = [
+      ami
+    ]
   }
 
   tags = {
