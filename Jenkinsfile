@@ -160,7 +160,7 @@ pipeline {
             }
         }
 
-                stage('EKS Authentication') {
+        stage('EKS Authentication') {
             steps {
                 sh '''
                     set -eu
@@ -175,14 +175,24 @@ pipeline {
                       --name "$EKS_CLUSTER_NAME" \
                       --kubeconfig "$KUBECONFIG"
 
-                    echo "Verifying Jenkins Kubernetes authorization..."
+                    echo "Verifying Jenkins can update application deployments..."
 
-                    kubectl auth can-i update deployments \
-                      --namespace challenge-app
+                    if ! kubectl auth can-i update deployments \
+                    --namespace challenge-app; then
+                        echo "ERROR: Jenkins cannot deploy to challenge-app."
+                        exit 1
+                    fi
 
-                    kubectl auth can-i delete nodes
+                    echo "Confirmed: Jenkins can deploy to challenge-app."
 
-                    echo "EKS authentication verified."
+                    echo "Verifying Jenkins is NOT a cluster administrator..."
+
+                    if kubectl auth can-i delete nodes; then
+                        echo "ERROR: Jenkins unexpectedly has permission to delete nodes."
+                        exit 1
+                    fi
+
+                    echo "Confirmed: Jenkins cannot delete nodes."
                 '''
             }
         }
