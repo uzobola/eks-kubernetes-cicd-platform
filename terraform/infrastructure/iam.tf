@@ -308,7 +308,8 @@ data "aws_iam_policy_document" "jenkins_permissions" {
       "ecr:PutImage",
       "ecr:UploadLayerPart",
       "ecr:BatchGetImage",
-      "ecr:GetDownloadUrlForLayer"
+      "ecr:GetDownloadUrlForLayer",
+      "ecr:DescribeImages"
     ]
 
     resources = [
