@@ -300,13 +300,13 @@ pipeline {
                 '''
             }
         }
-
-        post {
-            always {
-                sh '''
-                    rm -rf "$WORKSPACE/.kube" || true
-                '''
-            }
     }
+
+    post {
+        always {
+            sh '''
+                rm -rf "$WORKSPACE/.kube" || true
+            '''
+        }
     }
 }
