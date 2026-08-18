@@ -1,0 +1,164 @@
+name: GitOps Build and Publish
+# This workflow is used to build, scan, publish, and update the desired state of the application.
+on:
+  push:
+    branches:
+      - gitops
+    paths:
+      - "eks-kubernetes-cicd-platform/app/**"
+      - ".github/workflows/gitops.yml"
+
+# Concurrency
+concurrency:
+  group: gitops-image-publish
+  cancel-in-progress: false
+
+# Permissions
+permissions:
+  contents: write
+  id-token: write
+
+# Environment variables
+env:
+  AWS_REGION: us-east-1
+  AWS_ACCOUNT_ID: "421438965568"
+  ECR_REPOSITORY_NAME: eks-kubernetes-cicd-app
+  AWS_ROLE_ARN: arn:aws:iam::421438965568:role/eks-kubernetes-cicd-github-actions-role
+
+# Jobs
+# Build, Scan, Publish, Update Desired State
+jobs:
+  build-publish-update:
+    name: Build, Scan, Publish, Update Desired State
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout gitops branch
+        uses: actions/checkout@v6.0.2
+        with:
+          ref: gitops
+
+      - name: Generate build metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          SHORT_SHA="${GITHUB_SHA::7}"
+          IMAGE_TAG="${SHORT_SHA}-${GITHUB_RUN_NUMBER}"
+          ECR_REPOSITORY_URI="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPOSITORY_NAME}"
+          IMAGE_URI="${ECR_REPOSITORY_URI}:${IMAGE_TAG}"
+
+          echo "IMAGE_TAG=${IMAGE_TAG}" >> "$GITHUB_ENV"
+          echo "ECR_REPOSITORY_URI=${ECR_REPOSITORY_URI}" >> "$GITHUB_ENV"
+          echo "IMAGE_URI=${IMAGE_URI}" >> "$GITHUB_ENV"
+
+          echo "Commit: ${SHORT_SHA}"
+          echo "Image tag: ${IMAGE_TAG}"
+          echo "Image URI: ${IMAGE_URI}"
+
+      - name: Build application image
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          docker build \
+            --tag "$IMAGE_URI" \
+            eks-kubernetes-cicd-platform/app
+
+          docker image inspect "$IMAGE_URI" > /dev/null
+
+      - name: Trivy security gate
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: ${{ env.IMAGE_URI }}
+          scan-type: image
+          scanners: vuln
+          format: table
+          severity: HIGH,CRITICAL
+          ignore-unfixed: false
+          exit-code: "1"
+
+      - name: Configure AWS credentials through OIDC
+        uses: aws-actions/configure-aws-credentials@v6.2.3
+        with:
+          role-to-assume: ${{ env.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Verify AWS identity
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          echo "GitHub Actions AWS identity:"
+          aws sts get-caller-identity
+
+      - name: Authenticate Docker to ECR
+        uses: aws-actions/amazon-ecr-login@v2.1.6
+
+      - name: Push immutable image to ECR
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          docker push "$IMAGE_URI"
+
+          aws ecr describe-images \
+            --region "$AWS_REGION" \
+            --repository-name "$ECR_REPOSITORY_NAME" \
+            --image-ids imageTag="$IMAGE_TAG" \
+            --query 'imageDetails[0].[imageTags[0],imageDigest]' \
+            --output table
+
+      - name: Update Git desired state
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          python3 <<'PY'
+          import os
+          import re
+          from pathlib import Path
+
+          path = Path("helm/challenge-app/values.yaml")
+          text = path.read_text()
+
+          text = re.sub(
+              r'(?m)^  repository:.*$',
+              f'  repository: "{os.environ["ECR_REPOSITORY_URI"]}"',
+              text,
+              count=1,
+          )
+
+          text = re.sub(
+              r'(?m)^  tag:.*$',
+              f'  tag: "{os.environ["IMAGE_TAG"]}"',
+              text,
+              count=1,
+          )
+
+          path.write_text(text)
+          PY
+
+          echo "Updated desired state:"
+          grep -A3 '^image:' helm/challenge-app/values.yaml
+
+      - name: Commit desired state
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add helm/challenge-app/values.yaml
+
+          if git diff --cached --quiet; then
+            echo "Desired state already matches image."
+            exit 0
+          fi
+
+          git commit \
+            -m "gitops: deploy image ${IMAGE_TAG}"
+
+          git pull --rebase origin gitops
+          git push origin HEAD:gitops
