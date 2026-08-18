@@ -49,5 +49,24 @@ pipeline {
                 '''
             }
         }
+
+
+        stage('Checkov IaC Security') {
+            steps {
+                sh '''
+                    set -eu
+
+                    echo "Running Checkov against Terraform infrastructure..."
+
+                    checkov \
+                    --directory terraform \
+                    --framework terraform \
+                    --quiet \
+                    --compact
+
+                    echo "Checkov security gate passed."
+                '''
+                }
+    }
     }
 }
