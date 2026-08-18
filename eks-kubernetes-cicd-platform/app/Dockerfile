@@ -10,7 +10,14 @@ COPY requirements.txt .
 RUN pip install \
     --no-cache-dir \
     --disable-pip-version-check \
-    -r requirements.txt
+    -r requirements.txt \
+    && rm -rf \
+        /usr/local/lib/python3.13/site-packages/pip \
+        /usr/local/lib/python3.13/site-packages/pip-*.dist-info \
+        /usr/local/lib/python3.13/ensurepip \
+        /usr/local/bin/pip \
+        /usr/local/bin/pip3 \
+        /usr/local/bin/pip3.13
 
 COPY app.py .
 
