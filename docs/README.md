@@ -19,10 +19,6 @@ If this is your first time reviewing the project, use this order:
 7. [Observability](observability.md)
 8. [Installation and Operations](installation.md)
 
-For interview-oriented engineering decisions and lessons:
-
-[Interview Story Bank](interview.md)
-
 ---
 
 ## Documentation Map
@@ -327,33 +323,6 @@ Use this document when answering:
 
 ---
 
-### Interview Story Bank
-
-[**interview.md**](interview.md)
-
-Contains interview-ready engineering stories based on real problems and decisions encountered while building the platform.
-
-Examples include:
-
-- Remediating a real IAM least-privilege finding
-- Rejecting an unnecessary scanner remediation
-- Security controls creating new security findings
-- Why `Resource: "*"` is not automatically excessive privilege
-- Compensating controls and residual risk
-- Trivy vendored-package investigation
-- AWS IAM authentication vs Kubernetes authorization
-- Why the Flask application has no AWS role
-- Why GitHub Actions has no EKS deployment authority
-- Jenkins versus Argo CD
-- Terraform versus Cluster Autoscaler ownership
-- HPA resource-request behavior
-- SSM instead of SSH
-- NHI lifecycle and offboarding
-
-This document is intended for interview preparation rather than platform operation.
-
----
-
 ## Evidence
 
 Implementation evidence is stored under:
@@ -561,14 +530,6 @@ Read:
 Then inspect:
 
 - `evidence/security/`
-
-### Interview Preparation
-
-Read:
-
-- [`interview.md`](interview.md)
-
-Use the other documents only when deeper technical recall is needed.
 
 ---
 

@@ -399,17 +399,10 @@ Do not treat this section as the executable runbook; use
 │   ├── observability.md
 │   ├── security-model.md
 │   ├── nhi-governance-inventory.md
-│   ├── interview.md
 │   └── evidence/
 │
 ├── Jenkinsfile
 └── README.md
-```
-
-Validate this tree against the current repository before final submission:
-
-```bash
-tree -L 3 -I '.git|.terraform'
 ```
 
 ---
@@ -430,7 +423,6 @@ tree -L 3 -I '.git|.terraform'
 | [Observability](docs/observability.md)             | Prometheus and Grafana                         |
 | [Security Model](docs/security-model.md)           | Trust boundaries, controls, residual risk      |
 | [NHI Governance](docs/nhi-governance-inventory.md) | Machine identity inventory and lifecycle       |
-| [Interview Story Bank](docs/interview.md)          | Engineering decisions and lessons              |
 
 
 ---
