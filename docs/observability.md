@@ -16,7 +16,11 @@ Is Kubernetes telemetry reaching the monitoring system?
 
 The goal for this project is operational visibility into the running EKS environment rather than a full production monitoring platform.
 
-Related docs: [Architecture](architecture.md) · [Autoscaling](autoscaling.md) · [Security model](security-model.md)
+> What does Prometheus do that Metrics Server does not?
+
+Metrics Server supplies lightweight current resource metrics for `kubectl top` and HPA decisions. Prometheus collects broader time-series telemetry for dashboards and operational analysis.
+
+Related docs: [Architecture](architecture.md) · [Autoscaling](autoscaling.md) · [Security model](security-model.md) · [Installation](installation.md)
 
 ---
 
@@ -46,7 +50,7 @@ EKS Nodes and Pods
 
 ## Monitoring Stack
 
-The stack uses the Prometheus Community `kube-prometheus-stack` Helm chart.
+The stack uses the Prometheus Community `kube-prometheus-stack` Helm chart, pinned at chart version `88.3.0` during install.
 
 Installed components include:
 
@@ -60,7 +64,13 @@ Prometheus node-exporter
 
 Alertmanager is disabled for this challenge.
 
-Values for the install live under `platform/observability/`.
+Challenge values live in:
+
+```text
+platform/observability/kube-prometheus-stack-values.yaml
+```
+
+Install and access steps are documented in [Installation](installation.md).
 
 ---
 
@@ -158,7 +168,7 @@ The project keeps Grafana behind a Kubernetes ClusterIP Service.
 
 It is not exposed with a public load balancer.
 
-Access is performed locally through:
+Access is performed locally through port-forward (with the project AWS/kubeconfig identity as documented in Installation):
 
 ```bash
 kubectl -n monitoring port-forward \
@@ -173,6 +183,10 @@ http://localhost:3000
 ```
 
 This keeps the challenge dashboard from becoming another publicly reachable service.
+
+> Why wasn't Grafana publicly exposed?
+
+It is an administrative monitoring interface, not part of the public application. The service stays ClusterIP-only and is reached locally with `kubectl port-forward`.
 
 ### Grafana Authentication
 
@@ -217,7 +231,7 @@ The behavior was a dashboard refresh setting rather than loss of telemetry.
 
 ## Command-Line Validation
 
-Kubernetes resource telemetry was independently validated with:
+Monitoring pod presence and resource usage were checked with:
 
 ```text
 kubectl top pods -n monitoring
@@ -235,7 +249,9 @@ prometheus-monitoring-kube-prometheus-prometheus-0
 
 CPU and memory values were returned for the running monitoring workloads.
 
-This provides a second validation path outside the Grafana interface.
+`kubectl top` uses Metrics Server (`metrics.k8s.io`), not the Prometheus scrape path. It confirms that monitoring pods are running and report resource usage; Grafana and Prometheus remain the time-series validation path for dashboards.
+
+See [Autoscaling](autoscaling.md) for the Metrics Server role in HPA decisions.
 
 ---
 

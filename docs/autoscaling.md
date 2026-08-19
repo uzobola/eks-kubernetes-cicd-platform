@@ -9,7 +9,7 @@ The EKS platform implements two independent scaling mechanisms:
 
 These layers solve different capacity problems.
 
-Related docs: [Architecture](architecture.md) · [Observability](observability.md) · [Security model](security-model.md)
+Related docs: [Architecture](architecture.md) · [Observability](observability.md) · [Security model](security-model.md) · [Installation](installation.md)
 
 ---
 
@@ -120,7 +120,7 @@ Without Metrics Server, the HPA would have no CPU or memory telemetry for resour
 
 The application began with one replica.
 
-Load was generated against the application until resource utilization exceeded the configured HPA target.
+Load was generated against the application until resource utilization exceeded the configured HPA target. The challenge load generator lives at `platform/tests/hpa-load-generator.yaml`.
 
 Observed behavior:
 
@@ -172,7 +172,7 @@ After the change, steady-state utilization aligned more closely with the workloa
 
 This test reinforced an operational point:
 
-HPA percentages are evaluated against resource requests, not against the node's total capacity.
+> HPA percentages are evaluated against resource requests, not against the node's total capacity.
 
 Resource requests are part of scaling behavior, not merely scheduler hints.
 

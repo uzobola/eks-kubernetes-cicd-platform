@@ -23,7 +23,7 @@ The central security question used throughout the project is:
 
 The platform does not treat every technical component as automatically entitled to AWS, Kubernetes, Git, or host access.
 
-Related docs: [Architecture](architecture.md) · [CI/CD](cicd-pipeline.md) · [GitOps](gitops.md) · [Autoscaling](autoscaling.md) · [Observability](observability.md) · [NHI inventory](nhi-governance-inventory.md)
+Related docs: [Architecture](architecture.md) · [CI/CD](cicd-pipeline.md) · [GitOps](gitops.md) · [Autoscaling](autoscaling.md) · [Observability](observability.md) · [NHI inventory](nhi-governance-inventory.md) · [Installation](installation.md)
 
 ---
 
@@ -253,7 +253,9 @@ The application runs in:
 challenge-app
 ```
 
-The namespace applies Kubernetes Pod Security restricted controls.
+The `challenge-app` namespace applies Kubernetes Pod Security restricted controls (`enforce` / `audit` / `warn`).
+
+The `argocd` and `monitoring` namespaces are not under that restricted enforce label.
 
 Application resources are separated from system workloads in namespaces such as:
 
@@ -496,6 +498,8 @@ The private key is stored as an Argo CD repository credential Secret.
 
 Jenkins and Argo CD do not share a Git credential.
 
+Argo's Git key is read-only. Argo itself remains a high-value in-cluster identity because its application controller reconciles Kubernetes resources. See [NHI inventory](nhi-governance-inventory.md) identity 9.
+
 ### Why Separate Git Identities?
 
 The two systems perform different jobs.
@@ -544,7 +548,25 @@ AWS STS
 eks-kubernetes-cicd-github-actions-role
 ```
 
-The trust relationship is restricted to the expected repository and `gitops` branch.
+The IAM role trust is restricted to the GitHub OIDC provider and the exact repository / branch identity used by the GitOps workflow.
+
+The bound subject is:
+
+```text
+repo:uzobola@173111719/eks-kubernetes-cicd-platform@1333767654:ref:refs/heads/gitops
+```
+
+The trust also requires:
+
+```text
+aud = sts.amazonaws.com
+```
+
+This means the role can be assumed only when the GitHub OIDC token represents the expected repository and the `gitops` branch.
+
+A workflow from another repository or ref does not satisfy the trust conditions.
+
+A token from another repository, branch, or unrelated GitHub workflow context cannot assume the role through this trust relationship.
 
 Temporary STS credentials are issued only after the OIDC trust conditions match.
 
@@ -761,20 +783,23 @@ c3df150-1
 
 This provides end-to-end artifact traceability.
 
+The two delivery models are for demonstration and comparison. Do not treat Jenkins Helm deploys and Argo CD auto-sync as simultaneous owners of the same release. They can compete over desired state. See [GitOps](gitops.md) and [Installation](installation.md) section 24.
+
 ---
 
 ## Secrets and Credential Handling
 
 The project contains several credentials with different storage locations.
 
-| Credential                    | Storage                       | Purpose                          |
-| ----------------------------- | ----------------------------- | -------------------------------- |
-| Jenkins Git private key       | Jenkins credential store      | Read private Git repository      |
-| Argo CD Git private key       | Kubernetes Secret in `argocd` | Read private Git repository      |
-| GitHub Actions AWS credential | Short-lived STS session       | ECR publishing                   |
-| Jenkins AWS credential        | EC2 IAM role session          | ECR/EKS access                   |
-| Application AWS credential    | None                          | Application has no AWS authority |
-| Grafana admin password        | Kubernetes Secret             | Local Grafana administration     |
+| Credential                         | Storage                          | Purpose                               |
+| ---------------------------------- | -------------------------------- | ------------------------------------- |
+| Jenkins Git private key            | Jenkins credential store         | Read private Git repository           |
+| Argo CD Git private key            | Kubernetes Secret in `argocd`    | Read private Git repository           |
+| GitHub Actions AWS credential      | Short-lived STS session          | ECR publishing                        |
+| GitHub Actions repository token    | Workflow `GITHUB_TOKEN`          | Commit image tag to Git desired state |
+| Jenkins AWS credential             | EC2 IAM role session             | ECR/EKS access                        |
+| Application AWS credential         | None                             | Application has no AWS authority      |
+| Grafana admin password             | Kubernetes Secret                | Local Grafana administration          |
 
 Long-lived AWS access keys are not used by the Jenkins or GitHub Actions delivery paths.
 
@@ -1000,6 +1025,27 @@ Deploy key is read-only
 
 Argo can read desired state but cannot use that credential to commit malicious changes.
 
+### Compromised GitHub Actions Repository Token
+
+Potential attacker goal:
+
+```text
+Commit a malicious image tag into Git desired state
+```
+
+This credential can write repository contents. That is how the GitOps workflow updates desired state.
+
+Limits:
+
+```text
+No AWS IAM authority by itself
+No direct EKS API access
+Argo Git deploy key remains read-only
+Publishing a new ECR image still requires the OIDC / STS role
+```
+
+A malicious Git commit can still cause Argo to reconcile an image tag already in ECR, or a newly published image if the attacker also held the GitHub Actions AWS session.
+
 ### Compromised GitHub Actions AWS Session
 
 Potential attacker goal:
@@ -1048,7 +1094,7 @@ Authority is intentionally distributed.
 | Flask application            | None                             | Workload only              | None                |
 | Jenkins                      | ECR + EKS discovery              | `challenge-app` deployment | Read-only           |
 | GitHub Actions               | ECR publishing                   | None                       | Desired-state write |
-| Argo CD                      | None required for app deployment | Reconciliation             | Read-only           |
+| Argo CD                      | None required for app deployment | Privileged reconciliation  | Read-only           |
 | AWS Load Balancer Controller | Load-balancer AWS APIs           | Controller resources       | None                |
 | Cluster Autoscaler           | Node scaling APIs                | Autoscaling controller     | None                |
 | VPC CNI                      | Networking AWS APIs              | Node networking            | None                |

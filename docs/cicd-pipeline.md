@@ -8,9 +8,9 @@ It takes application source code from GitHub, validates infrastructure and conta
 
 The pipeline is designed so that each stage proves a distinct delivery or security claim.
 
-Related docs: [Architecture](architecture.md) · [GitOps](gitops.md) · [Security model](security-model.md)
+Related docs: [Architecture](architecture.md) · [GitOps](gitops.md) · [Security model](security-model.md) · [NHI inventory](nhi-governance-inventory.md) · [Installation](installation.md)
 
-This document covers the **Jenkins** delivery path only. The GitOps path (GitHub Actions + Argo CD) is intentionally separate.
+This document covers the **Jenkins** delivery path only (`main` branch). The GitOps path on `gitops` (GitHub Actions + Argo CD) is intentionally separate.
 
 ---
 
@@ -434,9 +434,7 @@ This proves that Jenkins can deploy the application without receiving cluster-ad
 
 The distinction matters:
 
-```text
-AWS IAM authentication is not Kubernetes authorization.
-```
+> AWS IAM authentication is not Kubernetes authorization.
 
 #### Private EKS API Connectivity
 

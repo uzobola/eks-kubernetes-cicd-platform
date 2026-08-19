@@ -23,7 +23,7 @@ The platform is designed around private worker nodes, explicit workload identiti
 
 Day-0 creates durable AWS foundations. Day-1 configures the controller and cluster add-ons. Day-2 delivers the application through Jenkins and/or GitOps.
 
-Related docs: [CI/CD](cicd-pipeline.md), [GitOps](gitops.md), [Security](security-model.md), [Observability](observability.md), [Autoscaling](autoscaling.md).
+Related docs: [CI/CD](cicd-pipeline.md), [GitOps](gitops.md), [Security](security-model.md), [NHI inventory](nhi-governance-inventory.md), [Observability](observability.md), [Autoscaling](autoscaling.md), [Installation](installation.md).
 
 ---
 
@@ -132,10 +132,8 @@ The Ingress uses the AWS Load Balancer Controller to provision the public Applic
 The application exposes:
 
 ```text
-
 /        Application response
 /health  Health endpoint
-
 ```
 
 The health endpoint is used by Kubernetes probes and the Application Load Balancer.
@@ -356,7 +354,7 @@ The application workload intentionally has no AWS IAM role.
 
 One design question used throughout the project is:
 
-Does this workload need an AWS identity at all?
+> Does this workload need an AWS identity at all?
 
 For the Flask application, the answer is no.
 
@@ -432,3 +430,5 @@ The project intentionally demonstrates two delivery approaches.
 | Cluster reconciler              | No                    | Argo CD                |
 
 Both delivery paths publish immutable application images to the same Amazon ECR repository.
+
+The two models are demonstrated side by side for learning and comparison. Do not treat Jenkins Helm deploys and Argo CD auto-sync as simultaneous owners of the same release in normal operation — they can compete over desired state if both are actively changing the same workload.
