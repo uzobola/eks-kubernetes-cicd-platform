@@ -350,7 +350,7 @@ EC2 IAM instance profile
 #### Evidence
 
 - `docs/evidence/security/jenkins-kubernetes-rbac-boundary.png`
-- `docs/evidence/cicd/jenkins-full-pipeline-success.png`
+- `docs/evidence/cicd/jenkins-private-repo-pipeline-success.png`
 
 #### Rotation / Replacement
 

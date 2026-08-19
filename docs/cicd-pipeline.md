@@ -620,7 +620,6 @@ Jenkins is intentionally **not** able to:
 
 Primary evidence for the Jenkins delivery path:
 
-- `docs/evidence/cicd/jenkins-full-pipeline-success.png`
 - `docs/evidence/cicd/jenkins-private-repo-pipeline-success.png`
 - `docs/evidence/security/jenkins-kubernetes-rbac-boundary.png`
 - `docs/evidence/security/cicd-git-identity-separation.png`
