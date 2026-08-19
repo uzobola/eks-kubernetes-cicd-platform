@@ -14,7 +14,7 @@ Argo CD reads that desired state and reconciles the Kubernetes cluster.
 
 The GitHub Actions workflow file lives on the **`gitops`** branch at `.github/workflows/gitops.yml`.
 
-Related docs: [Architecture](architecture.md) · [Jenkins CI/CD](cicd-pipeline.md) · [Security model](security-model.md)
+Related docs: [Architecture](architecture.md) · [Jenkins CI/CD](cicd-pipeline.md) · [Security model](security-model.md) · [NHI inventory](nhi-governance-inventory.md) · [Installation](installation.md)
 
 ---
 
@@ -166,22 +166,25 @@ eks-kubernetes-cicd-github-actions-role
 
 ### OIDC Trust Boundary
 
-The IAM role trust is restricted to the project GitHub repository and the `gitops` branch.
+The IAM role trust is restricted to the GitHub OIDC provider and the exact repository / branch identity used by the GitOps workflow.
 
-The repository uses GitHub's immutable repository identity format.
-
-This reduces the risk of trust transferring silently if a repository or owner name changes.
-
-The trust relationship verifies:
+The bound subject is:
 
 ```text
-OIDC issuer
-Audience
-Repository identity
-Branch reference
+repo:uzobola@173111719/eks-kubernetes-cicd-platform@1333767654:ref:refs/heads/gitops
 ```
 
-Only the expected GitHub workflow context may assume the role.
+The trust also requires:
+
+```text
+aud = sts.amazonaws.com
+```
+
+This means the role can be assumed only when the GitHub OIDC token represents the expected repository and the `gitops` branch.
+
+A workflow from another repository or ref does not satisfy the trust conditions.
+
+A token from another repository, branch, or unrelated GitHub workflow context cannot assume the role through this trust relationship.
 
 ### AWS Permissions
 
@@ -361,21 +364,39 @@ Argo CD
 
 ### Installation
 
-Argo CD was installed into the `argocd` namespace with the official `argo-cd` Helm chart from the Argo project.
+Argo CD is installed in the `argocd` namespace using the pinned upstream Argo CD `v3.5.0` installation manifest.
 
-The Application definition for this workload is kept at:
-
-```text
-platform/argocd/challenge-app.yaml
+```bash
+aws-vault exec terraform -- \
+  kubectl apply \
+  -n argocd \
+  --server-side \
+  --force-conflicts \
+  -f https://raw.githubusercontent.com/argoproj/argo-cd/v3.5.0/manifests/install.yaml
 ```
 
-Argo CD UI access for this challenge uses local `kubectl port-forward` rather than a public load balancer.
+A pinned release is used rather than the moving `stable` manifest so the installed platform version is explicit and reproducible.
 
-### Control Plane
+These are two separate concerns:
 
-Argo CD runs inside the EKS cluster in the `argocd` namespace.
+```text
+Argo CD installation:
+Pinned upstream v3.5.0 install.yaml
 
-Installed components include:
+Application deployment through Argo CD:
+Helm chart at helm/challenge-app/
+```
+
+Argo CD itself was **not** installed with Helm. Argo CD uses the application's Helm chart as the Git desired-state source.
+
+The installation was validated by confirming the Argo CD components were running:
+
+```bash
+aws-vault exec terraform -- \
+  kubectl get pods -n argocd
+```
+
+Validated components included:
 
 ```text
 argocd-application-controller
@@ -387,7 +408,13 @@ argocd-repo-server
 argocd-server
 ```
 
-The components were validated in Running state before the GitOps Application was configured.
+The Application definition for this workload is kept at:
+
+```text
+platform/argocd/challenge-app.yaml
+```
+
+Argo CD UI access for this challenge uses local `kubectl port-forward` rather than a public load balancer.
 
 ### Git Repository Access
 
@@ -477,6 +504,8 @@ Live managed resource changed
 ```
 
 Git becomes the desired-state authority for this delivery path.
+
+The two delivery models are for demonstration and comparison. Do not treat Jenkins Helm deploys and Argo CD auto-sync as simultaneous owners of the same release — they can compete over desired state. See [Architecture](architecture.md) and [Installation](installation.md) section 24.
 
 ### Proven Reconciliation
 

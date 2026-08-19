@@ -669,6 +669,8 @@ aws-vault exec terraform -- \
   -w
 ```
 
+The challenge load generator lives at `platform/tests/hpa-load-generator.yaml`.
+
 Expected scale-out:
 
 ```text
@@ -734,10 +736,10 @@ git checkout gitops
 git pull origin gitops
 ```
 
-The GitOps workflow is located under:
+The GitOps workflow lives on the `gitops` branch at:
 
 ```text
-.github/workflows/
+.github/workflows/gitops.yml
 ```
 
 It builds the application, scans the image, authenticates to AWS through OIDC, publishes the artifact to ECR, and updates:
@@ -793,7 +795,7 @@ aws-vault exec terraform -- \
   kubectl create namespace argocd
 ```
 
-The project installation used a pinned upstream Argo CD install manifest (operational source of truth for this runbook).
+The project installation used a pinned upstream Argo CD `v3.5.0` install manifest (see [GitOps](gitops.md)). A pinned release is used rather than the moving `stable` manifest so the installed version is explicit and reproducible. Argo CD itself is not installed with Helm; the application Helm chart at `helm/challenge-app/` is only the desired-state source Argo reconciles.
 
 Example project command:
 

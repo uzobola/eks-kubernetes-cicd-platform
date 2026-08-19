@@ -26,7 +26,7 @@ The guiding principle is:
 
 > An identity should exist only when a workload or automation process needs one, and its authority should be limited to the function it performs.
 
-Related docs: [Architecture](architecture.md) · [Security model](security-model.md) · [CI/CD](cicd-pipeline.md) · [GitOps](gitops.md)
+Related docs: [Architecture](architecture.md) · [Security model](security-model.md) · [CI/CD](cicd-pipeline.md) · [GitOps](gitops.md) · [Installation](installation.md)
 
 ---
 
@@ -487,16 +487,23 @@ STS temporary credentials
 
 #### Trust Boundary
 
-Trust is restricted to:
+The IAM role trust is restricted to the GitHub OIDC provider and the exact repository / branch identity used by the GitOps workflow.
+
+The bound subject is:
 
 ```text
-Expected GitHub owner
-Expected repository
-gitops branch
-AWS STS audience
+repo:uzobola@173111719/eks-kubernetes-cicd-platform@1333767654:ref:refs/heads/gitops
 ```
 
-The project uses the repository's immutable GitHub OIDC subject format.
+The trust also requires:
+
+```text
+aud = sts.amazonaws.com
+```
+
+This means the role can be assumed only when the GitHub OIDC token represents the expected repository and the `gitops` branch.
+
+A workflow from another repository or ref does not satisfy the trust conditions.
 
 #### Authority
 
@@ -510,7 +517,7 @@ only when the trust conditions match.
 
 #### Authority Withheld
 
-A token from an unrelated repository or branch must not be able to assume the role.
+A token from another repository, branch, or unrelated GitHub workflow context cannot assume the role through this trust relationship.
 
 #### Credential Location
 
