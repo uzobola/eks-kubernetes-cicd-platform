@@ -18,6 +18,14 @@ The platform combines Terraform-managed infrastructure, Kubernetes autoscaling,
 security gates, workload identity controls, non-human identity governance, and
 Prometheus/Grafana observability.
 
+> **Two delivery models, two branches**
+>
+> | Model | Branch | What it demonstrates |
+> |---|---|---|
+> | Push-based (Jenkins) | `main` | Jenkins builds, scans with Checkov and Trivy, pushes to ECR, and deploys with Helm |
+> | GitOps (Argo CD) | [`gitoops`](https://github.com/uzobola/eks-kubernetes-cicd-platform/tree/gitops) | GitHub Actions authenticates with OIDC, pushes the image, and commits the new tag to Helm values; Argo CD reconciles the cluster from Git |
+>
+
 ---
 
 ## Project Context
