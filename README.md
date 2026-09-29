@@ -399,6 +399,7 @@ Do not treat this section as the executable runbook; use
 │   ├── observability.md
 │   ├── security-model.md
 │   ├── nhi-governance-inventory.md
+│   ├── cleanup.md
 │   └── evidence/
 │
 ├── Jenkinsfile
@@ -423,6 +424,7 @@ Do not treat this section as the executable runbook; use
 | [Observability](docs/observability.md)             | Prometheus and Grafana                         |
 | [Security Model](docs/security-model.md)           | Trust boundaries, controls, residual risk      |
 | [NHI Governance](docs/nhi-governance-inventory.md) | Machine identity inventory and lifecycle       |
+| [Cleanup](docs/cleanup.md)                         | Teardown, AWS verification, identity offboard  |
 
 
 ---

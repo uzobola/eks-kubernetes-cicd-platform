@@ -22,7 +22,7 @@ The platform includes:
 
 Commands assume execution from the repository root unless stated otherwise.
 
-Related docs: [Architecture](architecture.md) · [CI/CD](cicd-pipeline.md) · [GitOps](gitops.md) · [Security model](security-model.md) · [NHI inventory](nhi-governance-inventory.md) · [Autoscaling](autoscaling.md) · [Observability](observability.md)
+Related docs: [Architecture](architecture.md) · [CI/CD](cicd-pipeline.md) · [GitOps](gitops.md) · [Security model](security-model.md) · [NHI inventory](nhi-governance-inventory.md) · [Autoscaling](autoscaling.md) · [Observability](observability.md) · [Cleanup](cleanup.md)
 
 ### Runbook phases
 
@@ -34,6 +34,8 @@ Related docs: [Architecture](architecture.md) · [CI/CD](cicd-pipeline.md) · [G
 | D — GitOps | 19–24 | `gitops` branch, OIDC, Argo CD, reconciliation ownership |
 | E — Monitoring | 25–27 | Prometheus / Grafana install and access |
 | F — Closeout | 28–33 | Security checks, evidence, teardown, identity offboarding |
+
+The executable teardown runbook is [Cleanup](cleanup.md). Sections 31–33 below remain the high-level closeout summary.
 
 ---
 
@@ -1172,6 +1174,8 @@ Evidence should demonstrate a claim, not simply show that a command was executed
 
 Teardown should follow dependency order.
 
+The executable sequence, including Helm/Argo/ALB removal before Terraform destroy, is in [Cleanup](cleanup.md).
+
 A safe high-level sequence is:
 
 ```text
@@ -1208,7 +1212,7 @@ aws-vault exec terraform -- \
   terraform -chdir=terraform/infrastructure destroy
 ```
 
-The Terraform state bucket may have deletion protection and should be handled separately.
+The Terraform state bucket may have deletion protection and should be handled separately. See [Cleanup](cleanup.md) sections 13–18.
 
 Do not manually delete the state store before Terraform-managed infrastructure has been removed.
 

@@ -18,6 +18,7 @@ If this is your first time reviewing the project, use this order:
 6. [Autoscaling](autoscaling.md)
 7. [Observability](observability.md)
 8. [Installation and Operations](installation.md)
+9. [Cleanup and Teardown](cleanup.md)
 
 ---
 
@@ -323,6 +324,18 @@ Use this document when answering:
 
 ---
 
+### Cleanup and Teardown
+
+[**cleanup.md**](cleanup.md)
+
+Removes Kubernetes, Helm, Argo CD, AWS load balancers, Terraform infrastructure, and external machine credentials in dependency order.
+
+Use this document when answering:
+
+> How do you retire the platform without leaving billable AWS resources or live machine trust?
+
+---
+
 ## Evidence
 
 Implementation evidence is stored under:
@@ -513,6 +526,7 @@ Read:
 
 - [`architecture.md`](architecture.md)
 - [`installation.md`](installation.md)
+- [`cleanup.md`](cleanup.md)
 - [`cicd-pipeline.md`](cicd-pipeline.md)
 - [`gitops.md`](gitops.md)
 - [`autoscaling.md`](autoscaling.md)
