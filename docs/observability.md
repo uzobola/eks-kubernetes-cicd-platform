@@ -62,9 +62,9 @@ kube-state-metrics
 Prometheus node-exporter
 ```
 
-Alertmanager is disabled for this challenge.
+Alertmanager is disabled for this environment.
 
-Challenge values live in:
+Values for this environment live in:
 
 ```text
 platform/observability/kube-prometheus-stack-values.yaml
@@ -78,7 +78,7 @@ Install and access steps are documented in [Installation](installation.md).
 
 Prometheus collects and stores time-series metrics from Kubernetes and monitoring exporters.
 
-The challenge profile uses:
+This environment uses:
 
 ```text
 Retention: 6 hours
@@ -90,7 +90,7 @@ CPU limit:      500m
 Memory limit:   768Mi
 ```
 
-The short retention period keeps the monitoring footprint small for the challenge environment.
+The short retention period keeps the monitoring footprint small for this environment.
 
 Production monitoring would normally use persistent storage, longer retention, or a remote metrics platform.
 
@@ -100,7 +100,7 @@ Prometheus Operator manages Prometheus-related Kubernetes resources.
 
 The operator provides Kubernetes-native management for the monitoring stack rather than requiring manual Prometheus configuration for each component.
 
-Its challenge resource profile is kept small:
+Its resource profile is kept small:
 
 ```text
 CPU request:    50m
@@ -182,7 +182,7 @@ The interface is then available at:
 http://localhost:3000
 ```
 
-This keeps the challenge dashboard from becoming another publicly reachable service.
+This keeps the Grafana dashboard from becoming another publicly reachable service.
 
 > Why wasn't Grafana publicly exposed?
 
@@ -259,7 +259,7 @@ See [Autoscaling](autoscaling.md) for the Metrics Server role in HPA decisions.
 
 The EKS node group uses `t3.small` workers, so the monitoring installation was intentionally constrained.
 
-The challenge configuration uses bounded CPU and memory resources for:
+This environment uses bounded CPU and memory resources for:
 
 ```text
 Grafana
@@ -295,7 +295,7 @@ A production monitoring design would likely introduce controls such as:
 - Backup and recovery
 - Monitoring for the monitoring platform itself
 
-Those controls are outside the scope of this challenge implementation.
+Those controls are outside the scope of this environment.
 
 ---
 

@@ -120,7 +120,7 @@ Without Metrics Server, the HPA would have no CPU or memory telemetry for resour
 
 The application began with one replica.
 
-Load was generated against the application until resource utilization exceeded the configured HPA target. The challenge load generator lives at `platform/tests/hpa-load-generator.yaml`.
+Load was generated against the application until resource utilization exceeded the configured HPA target. The load generator lives at `platform/tests/hpa-load-generator.yaml`.
 
 Observed behavior:
 

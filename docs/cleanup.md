@@ -59,7 +59,7 @@ If yes, teardown is incomplete.
 
 Do not begin teardown until required screenshots and documentation are in Git.
 
-Commit remaining documentation and evidence on `main` explicitly. Do not use `git add .`; that can pick up local notes, `docs/evidence/submission/`, or credentials.
+Commit remaining documentation and evidence on `main` explicitly. Do not use `git add .`; that can pick up local notes, `docs/evidence/summary/`, or credentials.
 
 ```bash
 git status

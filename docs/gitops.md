@@ -414,7 +414,7 @@ The Application definition for this workload is kept at:
 platform/argocd/challenge-app.yaml
 ```
 
-Argo CD UI access for this challenge uses local `kubectl port-forward` rather than a public load balancer.
+Argo CD UI access for this environment uses local `kubectl port-forward` rather than a public load balancer.
 
 ### Git Repository Access
 

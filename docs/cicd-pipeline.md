@@ -236,7 +236,7 @@ Intentional architecture decision
 
 Examples include:
 
-- Public Jenkins IP accepted for the challenge while inbound access remains closed and SSM is used for administration
+- Public Jenkins IP accepted for this environment while inbound access remains closed and SSM is used for administration
 - ECR AES-256 encryption retained instead of replacing the repository to introduce a customer-managed key
 - AWS APIs that require wildcard resource scope kept at `Resource: "*"` where the service authorization model requires it
 

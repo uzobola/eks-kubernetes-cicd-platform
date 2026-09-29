@@ -1,4 +1,4 @@
-# Lightweight observability profile for the EKS challenge environment.
+# Lightweight observability profile for this EKS environment.
 
 alertmanager:
   enabled: false

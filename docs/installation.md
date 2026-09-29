@@ -308,7 +308,7 @@ On Windows with WSL, an equivalent pattern used in this project is:
 ```bash
 aws-vault exec ansible -- \
   wsl.exe bash -lc \
-  'cd /mnt/c/Users/<you>/projects/1-percent-university/tech-challenge-2/ansible && ansible-playbook playbooks/configure-jenkins.yml -v'
+  'cd /mnt/c/<path-to-repo>/ansible && ansible-playbook playbooks/configure-jenkins.yml -v'
 ```
 
 The playbook configures the Jenkins host with the project toolchain, including:
@@ -671,7 +671,7 @@ aws-vault exec terraform -- \
   -w
 ```
 
-The challenge load generator lives at `platform/tests/hpa-load-generator.yaml`.
+The load generator lives at `platform/tests/hpa-load-generator.yaml`.
 
 Expected scale-out:
 

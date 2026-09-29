@@ -725,7 +725,7 @@ Kubernetes Deployment
 
 ECR scan-on-push is enabled.
 
-Repository encryption uses AWS-managed AES-256 encryption for the challenge environment.
+Repository encryption uses AWS-managed AES-256 encryption for this environment.
 
 ---
 
@@ -887,9 +887,9 @@ The project does not expose Grafana through another public load balancer.
 
 ---
 
-## Accepted Risks and Challenge Exceptions
+## Accepted Risks and Exceptions
 
-The project deliberately distinguishes challenge implementation from a production target.
+The project deliberately distinguishes this environment from a production target.
 
 ### Jenkins Public IP
 
@@ -913,7 +913,7 @@ Private management path
 
 ### Public Application Uses HTTP
 
-The challenge Application Load Balancer currently serves HTTP.
+The application load balancer currently serves HTTP.
 
 Production direction:
 
@@ -932,7 +932,7 @@ The application ECR repository uses AWS-managed AES-256 encryption.
 
 Moving to a customer-managed KMS key would require repository replacement or migration.
 
-For this short-lived challenge environment, the existing repository was retained.
+For this short-lived environment, the existing repository was retained.
 
 Production direction:
 
@@ -956,7 +956,7 @@ Jenkins uses Docker on the controller host.
 
 Membership in the Docker execution context carries high host authority.
 
-The challenge accepts this on a dedicated controller.
+This environment accepts this on a dedicated controller.
 
 Production direction could include:
 

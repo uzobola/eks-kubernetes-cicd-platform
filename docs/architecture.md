@@ -292,7 +292,7 @@ Prometheus collects cluster and workload telemetry.
 
 Grafana provides Kubernetes dashboards for CPU, memory, node, and pod visibility.
 
-Grafana is exposed only through local kubectl port-forward during this challenge rather than through a public load balancer.
+Grafana is exposed only through local kubectl port-forward in this environment rather than through a public load balancer.
 
 ---
 
@@ -392,7 +392,7 @@ The infrastructure is designed to recover application capacity without depending
 
 ## Intentional Non-Goals
 
-For this challenge scope, the design deliberately does **not** include:
+For this environment, the design deliberately does **not** include:
 
 - Public Grafana or Argo CD UIs (local port-forward only)
 - Application IRSA or AWS API access from the Flask workload
