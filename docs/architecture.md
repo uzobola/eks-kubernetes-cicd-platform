@@ -431,4 +431,4 @@ The project intentionally demonstrates two delivery approaches.
 
 Both delivery paths publish immutable application images to the same Amazon ECR repository.
 
-The two models are demonstrated side by side for learning and comparison. Do not treat Jenkins Helm deploys and Argo CD auto-sync as simultaneous owners of the same release in normal operation — they can compete over desired state if both are actively changing the same workload.
+The two models are demonstrated side by side for comparison. Do not treat Jenkins Helm deploys and Argo CD auto-sync as simultaneous owners of the same release in normal operation — they can compete over desired state if both are actively changing the same workload.
