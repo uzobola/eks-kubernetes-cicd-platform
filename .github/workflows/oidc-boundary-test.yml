@@ -11,6 +11,12 @@ jobs:
   assume:
     runs-on: ubuntu-latest
     steps:
+      - name: Show test context
+        run: |
+          echo "Repository: ${{ github.repository }}"
+          echo "Ref: ${{ github.ref }}"
+          echo "SHA: ${{ github.sha }}"
+
       - name: Configure AWS credentials through OIDC
         uses: aws-actions/configure-aws-credentials@v6.2.3
         with:
