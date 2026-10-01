@@ -24,5 +24,7 @@ jobs:
           aws-region: us-east-1
           mask-aws-account-id: true
 
-      - name: Verify AWS identity
-        run: aws sts get-caller-identity
+      - name: Verify AWS role assumption
+        run: |
+          aws sts get-caller-identity >/dev/null
+          echo "PASS: trusted GitHub identity successfully assumed the AWS role."
