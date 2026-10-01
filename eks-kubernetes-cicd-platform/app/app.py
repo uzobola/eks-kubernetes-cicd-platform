@@ -11,7 +11,7 @@ def home():
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Challenge Complete</title>
+        <title>Deployment Complete</title>
         <style>
             body {
                 margin: 0;
@@ -30,7 +30,7 @@ def home():
         </style>
     </head>
     <body>
-        <h1>Congratulations Challenge Completed !</h1>
+        <h1>Congratulations Deployment Completed !</h1>
     </body>
     </html>
     """, 200

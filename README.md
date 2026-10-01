@@ -175,7 +175,7 @@ Endpoints:
 Successful deployment displays:
 
 ```text
-Congratulations Challenge Completed !
+Congratulations Deployment Completed !
 ```
 
 The application intentionally receives:

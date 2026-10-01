@@ -303,7 +303,7 @@ pipeline {
 
                     curl --fail --silent \
                       "http://$ALB_HOST/" \
-                      | grep -F "Congratulations Challenge Completed !"
+                      | grep -F "Congratulations Deployment Completed !"
 
                     echo
                     echo "Live application test passed."

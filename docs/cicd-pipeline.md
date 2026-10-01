@@ -526,7 +526,7 @@ The pipeline retries briefly while the Application Load Balancer completes targe
 After health succeeds, Jenkins tests the live application response and verifies that it contains:
 
 ```text
-Congratulations Challenge Completed !
+Congratulations Deployment Completed !
 ```
 
 The final CI/CD success condition is:

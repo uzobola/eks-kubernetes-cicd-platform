@@ -638,7 +638,7 @@ curl http://<ALB-DNS>/
 Expected page content includes:
 
 ```text
-Congratulations Challenge Completed !
+Congratulations Deployment Completed !
 ```
 
 ---
