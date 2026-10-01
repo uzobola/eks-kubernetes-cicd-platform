@@ -1,0 +1,34 @@
+name: oidc-negative-test
+
+on:
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  assume:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Attempt AWS role assumption
+        id: oidc
+        continue-on-error: true
+        uses: aws-actions/configure-aws-credentials@v6.2.3
+        with:
+          role-to-assume: arn:aws:iam::421438965568:role/eks-kubernetes-cicd-github-actions-role
+          aws-region: us-east-1
+
+      - name: Assert role assumption was denied
+        shell: bash
+        run: |
+          echo "OIDC step outcome: ${{ steps.oidc.outcome }}"
+
+          if [ "${{ steps.oidc.outcome }}" != "failure" ]; then
+            echo "SECURITY TEST FAILED"
+            echo "Untrusted GitHub identity was able to assume the AWS role."
+            exit 1
+          fi
+
+          echo "SECURITY TEST PASSED"
+          echo "Untrusted GitHub identity was denied AWS role assumption."
