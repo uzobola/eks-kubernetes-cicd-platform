@@ -26,3 +26,7 @@ venv/
 
 # Local notes (not committed)
 docs/interview.md
+
+# Temporarily untracked LinkedIn summary screenshots (kept locally)
+docs/evidence/summary/01-live-application.png
+docs/evidence/summary/02-jenkins-pipeline-success.png
