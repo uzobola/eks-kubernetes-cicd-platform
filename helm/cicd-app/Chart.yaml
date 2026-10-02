@@ -1,5 +1,5 @@
 apiVersion: v2
-name: challenge-app
+name: cicd-app
 description: Secure Flask application deployed to Amazon EKS
 type: application
 version: 0.1.0

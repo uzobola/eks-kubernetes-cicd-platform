@@ -3,9 +3,9 @@ resource "random_id" "state_suffix" {
 }
 
 resource "aws_s3_bucket" "terraform_state" {
-  #checkov:skip=CKV_AWS_18:Dedicated S3 server-access logging is outside this challenge scope; production target is centralized audit logging for state-bucket access
+  #checkov:skip=CKV_AWS_18:Dedicated S3 server-access logging is outside this project scope; production target is centralized audit logging for state-bucket access
   #checkov:skip=CKV2_AWS_62:Terraform state has no event-driven consumer requiring S3 event notifications
-  #checkov:skip=CKV_AWS_144:Cross-region state replication is a production DR policy decision; versioning provides recovery for this single-region challenge environment
+  #checkov:skip=CKV_AWS_144:Cross-region state replication is a production DR policy decision; versioning provides recovery for this single-region environment
 
 
   bucket = "${var.project_name}-tfstate-${random_id.state_suffix.hex}"

@@ -212,7 +212,7 @@ resource "aws_eks_node_group" "main" {
   }
 
   labels = {
-    workload = "challenge-app"
+    workload = "cicd-app"
   }
 
   depends_on = [
