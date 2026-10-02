@@ -2,7 +2,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 
 metadata:
-  name: challenge-app-gitops
+  name: cicd-app-gitops
   namespace: argocd
 
 spec:
@@ -11,14 +11,14 @@ spec:
   source:
     repoURL: git@github.com:uzobola/eks-kubernetes-cicd-platform.git
     targetRevision: gitops
-    path: helm/challenge-app
+    path: helm/cicd-app
 
     helm:
-      releaseName: challenge-app
+      releaseName: cicd-app
 
   destination:
     server: https://kubernetes.default.svc
-    namespace: challenge-app
+    namespace: cicd-app
 
   syncPolicy:
     automated:

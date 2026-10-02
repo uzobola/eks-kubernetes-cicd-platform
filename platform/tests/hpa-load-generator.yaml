@@ -3,7 +3,7 @@ kind: Pod
 
 metadata:
   name: hpa-load-generator
-  namespace: challenge-app
+  namespace: cicd-app
 
 spec:
   restartPolicy: Never
@@ -26,10 +26,10 @@ spec:
 
       args:
         - |
-          echo "Starting HTTP load against challenge-app..."
+          echo "Starting HTTP load against cicd-app..."
           for i in 1 2 3 4 5 6 7 8 9 10 11 12; do
             while true; do
-              wget -q -O- http://challenge-app/ > /dev/null
+              wget -q -O- http://cicd-app/ > /dev/null
             done &
           done
           wait

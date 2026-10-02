@@ -178,12 +178,12 @@ pipeline {
                     echo "Verifying Jenkins can update application deployments..."
 
                     if ! kubectl auth can-i update deployments \
-                    --namespace challenge-app; then
-                        echo "ERROR: Jenkins cannot deploy to challenge-app."
+                    --namespace cicd-app; then
+                        echo "ERROR: Jenkins cannot deploy to cicd-app."
                         exit 1
                     fi
 
-                    echo "Confirmed: Jenkins can deploy to challenge-app."
+                    echo "Confirmed: Jenkins can deploy to cicd-app."
 
                     echo "Verifying Jenkins is NOT a cluster administrator..."
 
@@ -206,9 +206,9 @@ pipeline {
                     echo "Deploying image:"
                     echo "$IMAGE_URI"
 
-                    helm upgrade --install challenge-app \
-                      helm/challenge-app \
-                      --namespace challenge-app \
+                    helm upgrade --install cicd-app \
+                      helm/cicd-app \
+                      --namespace cicd-app \
                       --set image.repository="$ECR_REPOSITORY" \
                       --set image.tag="$IMAGE_TAG" \
                       --atomic \
@@ -229,15 +229,15 @@ pipeline {
                     echo "Verifying Kubernetes rollout..."
 
                     kubectl rollout status \
-                      deployment/challenge-app \
-                      --namespace challenge-app \
+                      deployment/cicd-app \
+                      --namespace cicd-app \
                       --timeout=180s
 
                     echo
                     echo "Deployed image:"
 
-                    kubectl get deployment challenge-app \
-                      --namespace challenge-app \
+                    kubectl get deployment cicd-app \
+                      --namespace cicd-app \
                       -o jsonpath='{.spec.template.spec.containers[0].image}'
 
                     echo
@@ -245,8 +245,8 @@ pipeline {
 
                     EXPECTED_IMAGE="$IMAGE_URI"
 
-                    ACTUAL_IMAGE=$(kubectl get deployment challenge-app \
-                      --namespace challenge-app \
+                    ACTUAL_IMAGE=$(kubectl get deployment cicd-app \
+                      --namespace cicd-app \
                       -o jsonpath='{.spec.template.spec.containers[0].image}')
 
                     if [ "$ACTUAL_IMAGE" != "$EXPECTED_IMAGE" ]; then
@@ -267,8 +267,8 @@ pipeline {
                     set -eu
                     export KUBECONFIG="$WORKSPACE/.kube/config"
 
-                    ALB_HOST=$(kubectl get ingress challenge-app \
-                      --namespace challenge-app \
+                    ALB_HOST=$(kubectl get ingress cicd-app \
+                      --namespace cicd-app \
                       -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
 
                     if [ -z "$ALB_HOST" ]; then

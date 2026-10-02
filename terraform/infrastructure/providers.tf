@@ -5,7 +5,7 @@ provider "aws" {
     tags = {
       Project   = var.project_name
       ManagedBy = "Terraform"
-      Challenge = "Tech-Challenge-2"
+      Purpose   = "cicd"
     }
   }
 }
