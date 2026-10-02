@@ -6,7 +6,7 @@ metadata:
   name: {{ .Release.Name }}
 
   labels:
-    app.kubernetes.io/name: challenge-app
+    app.kubernetes.io/name: cicd-app
     app.kubernetes.io/instance: {{ .Release.Name }}
 
   annotations:

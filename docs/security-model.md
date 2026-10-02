@@ -250,10 +250,10 @@ Its objects are automatically expired.
 The application runs in:
 
 ```text
-challenge-app
+cicd-app
 ```
 
-The `challenge-app` namespace applies Kubernetes Pod Security restricted controls (`enforce` / `audit` / `warn`).
+The `cicd-app` namespace applies Kubernetes Pod Security restricted controls (`enforce` / `audit` / `warn`).
 
 The `argocd` and `monitoring` namespaces are not under that restricted enforce label.
 
@@ -297,7 +297,7 @@ jenkins-deployers
 Kubernetes RBAC grants deployment authority only within:
 
 ```text
-challenge-app
+cicd-app
 ```
 
 The authorization boundary was tested with both a permitted and denied action.
@@ -1092,7 +1092,7 @@ Authority is intentionally distributed.
 | Component                    | AWS Authority                    | Kubernetes Authority       | Git Authority       |
 | ---------------------------- | -------------------------------- | -------------------------- | ------------------- |
 | Flask application            | None                             | Workload only              | None                |
-| Jenkins                      | ECR + EKS discovery              | `challenge-app` deployment | Read-only           |
+| Jenkins                      | ECR + EKS discovery              | `cicd-app` deployment | Read-only           |
 | GitHub Actions               | ECR publishing                   | None                       | Desired-state write |
 | Argo CD                      | None required for app deployment | Privileged reconciliation  | Read-only           |
 | AWS Load Balancer Controller | Load-balancer AWS APIs           | Controller resources       | None                |

@@ -110,7 +110,7 @@ eks-kubernetes-cicd-platform/app/**
 It does **not** trigger on changes to:
 
 ```text
-helm/challenge-app/values.yaml
+helm/cicd-app/values.yaml
 ```
 
 That exclusion is intentional. The workflow’s own desired-state commit updates `values.yaml`. Keeping that path out of the trigger set prevents an automatic build loop.
@@ -282,7 +282,7 @@ The security gate therefore sits before both artifact release and Git reconcilia
 After publishing the image, GitHub Actions updates:
 
 ```text
-helm/challenge-app/values.yaml
+helm/cicd-app/values.yaml
 ```
 
 The image section contains the desired immutable ECR artifact.
@@ -302,7 +302,7 @@ The cluster is not modified by this step.
 
 ### Workflow Loop Prevention
 
-The automated desired-state commit modifies `helm/challenge-app/values.yaml`, which is outside the build-trigger paths listed above.
+The automated desired-state commit modifies `helm/cicd-app/values.yaml`, which is outside the build-trigger paths listed above.
 
 The bot commit does not immediately trigger another image build.
 
@@ -384,7 +384,7 @@ Argo CD installation:
 Pinned upstream v3.5.0 install.yaml
 
 Application deployment through Argo CD:
-Helm chart at helm/challenge-app/
+Helm chart at helm/cicd-app/
 ```
 
 Argo CD itself was **not** installed with Helm. Argo CD uses the application's Helm chart as the Git desired-state source.
@@ -411,7 +411,7 @@ argocd-server
 The Application definition for this workload is kept at:
 
 ```text
-platform/argocd/challenge-app.yaml
+platform/argocd/cicd-app.yaml
 ```
 
 Argo CD UI access for this environment uses local `kubectl port-forward` rather than a public load balancer.
@@ -454,7 +454,7 @@ The private key is not committed to Git.
 The Argo CD Application is:
 
 ```text
-challenge-app-gitops
+cicd-app-gitops
 ```
 
 It tracks:
@@ -467,10 +467,10 @@ Revision:
 gitops
 
 Path:
-helm/challenge-app
+helm/cicd-app
 
 Destination namespace:
-challenge-app
+cicd-app
 ```
 
 Helm renders the Kubernetes desired state from the repository.

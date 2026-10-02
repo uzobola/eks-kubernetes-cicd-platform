@@ -403,7 +403,7 @@ Apply the application namespace and Jenkins RBAC if they are not already present
 
 ```bash
 aws-vault exec terraform -- \
-  kubectl apply -f platform/namespaces/challenge-app.yaml
+  kubectl apply -f platform/namespaces/cicd-app.yaml
 
 aws-vault exec terraform -- \
   kubectl apply -f platform/rbac/jenkins-deployer.yaml
@@ -419,7 +419,7 @@ Validate authorization **as the Jenkins IAM principal** (not the Terraform admin
 
 ```bash
 kubectl auth can-i update deployments \
-  --namespace challenge-app
+  --namespace cicd-app
 ```
 
 Expected:
@@ -470,7 +470,7 @@ Application endpoints:
 The application is deployed through the Helm chart:
 
 ```text
-helm/challenge-app/
+helm/cicd-app/
 ```
 
 The chart creates resources such as:
@@ -552,7 +552,7 @@ Then:
 
 ```bash
 aws-vault exec terraform -- \
-  kubectl top pods -n challenge-app
+  kubectl top pods -n cicd-app
 ```
 
 If these commands return resource metrics, Metrics Server is functioning.
@@ -585,9 +585,9 @@ A successful run should finish with every stage green.
 The pipeline deploys an immutable ECR image tag with:
 
 ```bash
-helm upgrade --install challenge-app \
-  helm/challenge-app \
-  --namespace challenge-app \
+helm upgrade --install cicd-app \
+  helm/cicd-app \
+  --namespace cicd-app \
   --set image.repository="<ECR_REPOSITORY>" \
   --set image.tag="<IMAGE_TAG>" \
   --atomic \
@@ -606,7 +606,7 @@ Inspect Kubernetes resources:
 ```bash
 aws-vault exec terraform -- \
   kubectl get deployment,pods,svc,ingress,hpa \
-  -n challenge-app
+  -n cicd-app
 ```
 
 Retrieve the Ingress address:
@@ -614,7 +614,7 @@ Retrieve the Ingress address:
 ```bash
 aws-vault exec terraform -- \
   kubectl get ingress \
-  -n challenge-app
+  -n cicd-app
 ```
 
 Test health:
@@ -650,7 +650,7 @@ Inspect the HPA:
 ```bash
 aws-vault exec terraform -- \
   kubectl get hpa \
-  -n challenge-app
+  -n cicd-app
 ```
 
 Configuration:
@@ -667,7 +667,7 @@ During load testing, watch:
 ```bash
 aws-vault exec terraform -- \
   kubectl get hpa,pods \
-  -n challenge-app \
+  -n cicd-app \
   -w
 ```
 
@@ -747,7 +747,7 @@ The GitOps workflow lives on the `gitops` branch at:
 It builds the application, scans the image, authenticates to AWS through OIDC, publishes the artifact to ECR, and updates:
 
 ```text
-helm/challenge-app/values.yaml
+helm/cicd-app/values.yaml
 ```
 
 with the new immutable image tag.
@@ -797,7 +797,7 @@ aws-vault exec terraform -- \
   kubectl create namespace argocd
 ```
 
-The project installation used a pinned upstream Argo CD `v3.5.0` install manifest (see [GitOps](gitops.md)). A pinned release is used rather than the moving `stable` manifest so the installed version is explicit and reproducible. Argo CD itself is not installed with Helm; the application Helm chart at `helm/challenge-app/` is only the desired-state source Argo reconciles.
+The project installation used a pinned upstream Argo CD `v3.5.0` install manifest (see [GitOps](gitops.md)). A pinned release is used rather than the moving `stable` manifest so the installed version is explicit and reproducible. Argo CD itself is not installed with Helm; the application Helm chart at `helm/cicd-app/` is only the desired-state source Argo reconciles.
 
 Example project command:
 
@@ -880,7 +880,7 @@ Apply it:
 ```bash
 aws-vault exec terraform -- \
   kubectl apply \
-  -f platform/argocd/challenge-app.yaml
+  -f platform/argocd/cicd-app.yaml
 ```
 
 Inspect:
@@ -888,7 +888,7 @@ Inspect:
 ```bash
 aws-vault exec terraform -- \
   kubectl -n argocd get application \
-  challenge-app-gitops
+  cicd-app-gitops
 ```
 
 Expected:
@@ -902,7 +902,7 @@ Verify the live image:
 
 ```bash
 aws-vault exec terraform -- \
-  kubectl -n challenge-app get deployment challenge-app \
+  kubectl -n cicd-app get deployment cicd-app \
   -o jsonpath='{.spec.template.spec.containers[0].image}{"\n"}'
 ```
 

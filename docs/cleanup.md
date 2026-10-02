@@ -94,7 +94,7 @@ Check the GitOps Application:
 
 ```bash
 aws-vault exec terraform -- \
-  kubectl get application challenge-app-gitops \
+  kubectl get application cicd-app-gitops \
   -n argocd
 ```
 
@@ -103,7 +103,7 @@ Check application resources:
 ```bash
 aws-vault exec terraform -- \
   kubectl get all,ingress,hpa \
-  -n challenge-app
+  -n cicd-app
 ```
 
 Check Ingress across the cluster:
@@ -135,7 +135,7 @@ If it exists, configure cascading deletion:
 
 ```bash
 aws-vault exec terraform -- \
-  kubectl -n argocd patch application challenge-app-gitops \
+  kubectl -n argocd patch application cicd-app-gitops \
   --type merge \
   -p '{"metadata":{"finalizers":["resources-finalizer.argocd.argoproj.io"]}}'
 ```
@@ -144,7 +144,7 @@ Delete the Application:
 
 ```bash
 aws-vault exec terraform -- \
-  kubectl delete application challenge-app-gitops \
+  kubectl delete application cicd-app-gitops \
   -n argocd
 ```
 
@@ -154,7 +154,7 @@ Verify:
 
 ```bash
 aws-vault exec terraform -- \
-  kubectl get application challenge-app-gitops \
+  kubectl get application cicd-app-gitops \
   -n argocd
 ```
 
@@ -182,28 +182,28 @@ Check:
 
 ```bash
 aws-vault exec terraform -- \
-  helm list -n challenge-app
+  helm list -n cicd-app
 ```
 
 If the release still exists:
 
 ```bash
 aws-vault exec terraform -- \
-  helm uninstall challenge-app \
-  -n challenge-app
+  helm uninstall cicd-app \
+  -n cicd-app
 ```
 
 Verify:
 
 ```bash
 aws-vault exec terraform -- \
-  helm list -n challenge-app
+  helm list -n cicd-app
 ```
 
 Expected:
 
 ```text
-No challenge-app release
+No cicd-app release
 ```
 
 Check remaining application resources:
@@ -211,7 +211,7 @@ Check remaining application resources:
 ```bash
 aws-vault exec terraform -- \
   kubectl get all,ingress,hpa \
-  -n challenge-app
+  -n cicd-app
 ```
 
 Expected:
@@ -369,7 +369,7 @@ aws-vault exec terraform -- \
 
 ```bash
 aws-vault exec terraform -- \
-  kubectl delete namespace challenge-app \
+  kubectl delete namespace cicd-app \
   --ignore-not-found
 ```
 
@@ -408,7 +408,7 @@ The project should have:
 No project Helm releases
 No project Ingress
 No project ALB
-No challenge-app workload
+No cicd-app workload
 No Argo CD Application
 ```
 
@@ -735,8 +735,8 @@ docs/evidence/infrastructure/platform-teardown-complete.png
 
 [ ] Argo CD Application deleted
 [ ] HPA load-generator pod deleted
-[ ] Jenkins challenge-app Helm release deleted
-[ ] challenge-app resources deleted
+[ ] Jenkins cicd-app Helm release deleted
+[ ] cicd-app resources deleted
 [ ] Kubernetes Ingress deleted
 [ ] AWS ALB deleted
 
@@ -744,7 +744,7 @@ docs/evidence/infrastructure/platform-teardown-complete.png
 [ ] Cluster Autoscaler Helm release deleted
 [ ] AWS Load Balancer Controller Helm release deleted
 [ ] Argo CD deleted
-[ ] challenge-app namespace deleted
+[ ] cicd-app namespace deleted
 
 [ ] helm list -A reviewed
 [ ] terraform/infrastructure plan -destroy reviewed

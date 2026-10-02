@@ -828,7 +828,7 @@ Delete argocd namespace if the platform is fully retired
 
 | Field | Value |
 | ----- | ----- |
-| Identity | `challenge-app` |
+| Identity | `cicd-app` |
 | Type | Kubernetes ServiceAccount |
 | Owner | Flask application workload |
 

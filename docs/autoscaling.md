@@ -111,7 +111,7 @@ Metrics Server was validated through commands such as:
 
 ```text
 kubectl top nodes
-kubectl top pods -n challenge-app
+kubectl top pods -n cicd-app
 ```
 
 Without Metrics Server, the HPA would have no CPU or memory telemetry for resource-based scaling decisions.

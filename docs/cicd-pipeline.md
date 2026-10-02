@@ -418,7 +418,7 @@ Kubernetes RBAC
 Jenkins receives namespace-scoped deployment permissions in:
 
 ```text
-challenge-app
+cicd-app
 ```
 
 The pipeline validates both an allowed and a denied action.
@@ -426,7 +426,7 @@ The pipeline validates both an allowed and a denied action.
 Expected behavior:
 
 ```text
-Update deployment in challenge-app    YES
+Update deployment in cicd-app    YES
 Delete cluster nodes                   NO
 ```
 
@@ -469,7 +469,7 @@ The pipeline passes the exact ECR image repository and immutable tag generated d
 The Helm release is:
 
 ```text
-challenge-app
+cicd-app
 ```
 
 The deployment uses:
@@ -599,7 +599,7 @@ EKS access entry
 
 
 Kubernetes Role / RoleBinding
-    -> challenge-app deployment authority
+    -> cicd-app deployment authority
 ```
 
 No single source-control credential grants AWS or Kubernetes authority.

@@ -3,7 +3,7 @@ kind: Role
 
 metadata:
   name: jenkins-deployer
-  namespace: challenge-app
+  namespace: cicd-app
 
 rules:
 
@@ -92,7 +92,7 @@ kind: RoleBinding
 
 metadata:
   name: jenkins-deployer
-  namespace: challenge-app
+  namespace: cicd-app
 
 subjects:
   - kind: Group

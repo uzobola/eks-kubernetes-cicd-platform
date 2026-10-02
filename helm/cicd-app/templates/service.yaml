@@ -3,14 +3,14 @@ kind: Service
 metadata:
   name: {{ .Release.Name }}
   labels:
-    app.kubernetes.io/name: challenge-app
+    app.kubernetes.io/name: cicd-app
     app.kubernetes.io/instance: {{ .Release.Name }}
 
 spec:
   type: {{ .Values.service.type }}
 
   selector:
-    app.kubernetes.io/name: challenge-app
+    app.kubernetes.io/name: cicd-app
     app.kubernetes.io/instance: {{ .Release.Name }}
 
   ports:

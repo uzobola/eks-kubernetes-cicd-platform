@@ -18,7 +18,7 @@ The platform is designed around private worker nodes, explicit workload identiti
 | Bootstrap | `terraform/bootstrap` | Remote state bucket and lock foundation |
 | Infrastructure | `terraform/infrastructure` | VPC, EKS, ECR, Jenkins, IAM, OIDC, Flow Logs |
 | Jenkins config | `ansible/` | Toolchain and Jenkins setup over SSM (no SSH) |
-| App delivery | `helm/challenge-app`, `Jenkinsfile`, `.github/workflows` | Build, scan, publish, deploy / desired state |
+| App delivery | `helm/cicd-app`, `Jenkinsfile`, `.github/workflows` | Build, scan, publish, deploy / desired state |
 | Platform manifests | `platform/` | Namespace, RBAC, Argo CD app, observability values |
 
 Day-0 creates durable AWS foundations. Day-1 configures the controller and cluster add-ons. Day-2 delivers the application through Jenkins and/or GitOps.
@@ -113,7 +113,7 @@ The EKS public API endpoint is restricted to the administrator CIDR. Jenkins rea
 
 ## Kubernetes Architecture
 
-The application runs in the challenge-app namespace.
+The application runs in the cicd-app namespace.
 
 Primary Kubernetes resources include:
 
@@ -207,7 +207,7 @@ Jenkins authenticates to GitHub with a repository-specific read-only deploy key.
 
 Its AWS permissions are supplied through its EC2 instance role rather than static AWS access keys.
 
-Jenkins receives Kubernetes deployment authority only within the challenge-app namespace through Kubernetes RBAC.
+Jenkins receives Kubernetes deployment authority only within the cicd-app namespace through Kubernetes RBAC.
 
 It does not receive cluster-administrator permissions.
 
@@ -270,9 +270,9 @@ Argo CD        -> reconcile desired state
 
 The GitOps desired state for the application lives on the `gitops` branch in:
 
-`helm/challenge-app/values.yaml`
+`helm/cicd-app/values.yaml`
 
-GitHub Actions updates `image.repository` and `image.tag` after a successful publish. Argo CD syncs that Helm chart into the `challenge-app` namespace. Changing the running image means changing Git, not running `kubectl set image` by hand.
+GitHub Actions updates `image.repository` and `image.tag` after a successful publish. Argo CD syncs that Helm chart into the `cicd-app` namespace. Changing the running image means changing Git, not running `kubectl set image` by hand.
 
 ---
 

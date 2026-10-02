@@ -237,7 +237,7 @@ Flask application
 Jenkins
     -> ECR publishing
     -> EKS authentication
-    -> challenge-app deployment only
+    -> cicd-app deployment only
 
 GitHub Actions
     -> ECR publishing
@@ -379,7 +379,7 @@ Do not treat this section as the executable runbook; use
 │       └── requirements.txt
 │
 ├── helm/
-│   └── challenge-app/
+│   └── cicd-app/
 │
 ├── terraform/
 │   ├── bootstrap/
