@@ -1,0 +1,33 @@
+name: trivy-gate-demo
+on: workflow_dispatch
+permissions:
+  contents: read
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        variant: [with-pip, without-pip]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Select Dockerfile
+        working-directory: eks-kubernetes-cicd-platform/app
+        run: |
+          if [ "${{ matrix.variant }}" = "with-pip" ]; then
+            git show 3acd431:eks-kubernetes-cicd-platform/app/Dockerfile > Dockerfile.scan
+          else
+            cp Dockerfile Dockerfile.scan
+          fi
+      - name: Build image
+        working-directory: eks-kubernetes-cicd-platform/app
+        run: docker build -t cicd-app:${{ matrix.variant }} -f Dockerfile.scan .
+      - name: Trivy security gate
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: cicd-app:${{ matrix.variant }}
+          scanners: vuln
+          severity: HIGH,CRITICAL
+          exit-code: "1"
