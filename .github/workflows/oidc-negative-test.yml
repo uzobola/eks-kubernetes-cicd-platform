@@ -11,25 +11,32 @@ jobs:
   assume:
     runs-on: ubuntu-latest
     steps:
-      - name: Attempt AWS role assumption
-        id: oidc
-        continue-on-error: true
-        uses: aws-actions/configure-aws-credentials@v6.3.0
-        with:
-          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/eks-kubernetes-cicd-github-actions-role
-          aws-region: us-east-1
-          mask-aws-account-id: true
-
-      - name: Assert role assumption was denied
+      - name: Attempt role assumption and capture the denial
         shell: bash
+        env:
+          ROLE_ARN: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/eks-kubernetes-cicd-github-actions-role
         run: |
-          echo "OIDC step outcome: ${{ steps.oidc.outcome }}"
+          TOKEN=$(curl -sSf -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+            "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=sts.amazonaws.com" | jq -r .value)
 
-          if [ "${{ steps.oidc.outcome }}" != "failure" ]; then
-            echo "SECURITY TEST FAILED"
-            echo "Untrusted GitHub identity was able to assume the AWS role."
+          set +e
+          OUT=$(aws sts assume-role-with-web-identity \
+            --role-arn "$ROLE_ARN" \
+            --role-session-name negative-test \
+            --web-identity-token "$TOKEN" 2>&1)
+          RC=$?
+          set -e
+
+          echo "$OUT" | sed -E 's/[0-9]{12}/************/g'
+
+          if [ $RC -eq 0 ]; then
+            echo "SECURITY TEST FAILED: role was assumed from a non-approved ref"
             exit 1
           fi
 
-          echo "SECURITY TEST PASSED"
-          echo "Untrusted GitHub identity was denied AWS role assumption."
+          if echo "$OUT" | grep -q "AccessDenied"; then
+            echo "SECURITY TEST PASSED: denied by trust policy"
+          else
+            echo "SECURITY TEST FAILED: denied for an unexpected reason"
+            exit 1
+          fi
