@@ -482,7 +482,7 @@ Application health endpoint                     PASS
 HPA 1 → 3 → 1                                   PASS
 Cluster Autoscaler 1 → 2 → 1                    PASS
 
-Checkov 311 passed / 0 failed                   PASS
+Checkov 311 passed / 0 failed / 17 skipped                  PASS
 Trivy HIGH/CRITICAL gate                        PASS
 
 Jenkins full CI/CD pipeline                     PASS
