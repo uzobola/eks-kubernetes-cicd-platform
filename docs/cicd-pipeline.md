@@ -212,7 +212,7 @@ Checkov scans the Terraform configuration before application deployment.
 The final project scan reached:
 
 ```text
-Passed checks: 276
+Passed checks: 311
 Failed checks: 0
 Skipped checks: 17
 ```

@@ -23,7 +23,7 @@ Prometheus/Grafana observability.
 > | Model | Branch | What it demonstrates |
 > |---|---|---|
 > | Push-based (Jenkins) | `main` | Jenkins builds, scans with Checkov and Trivy, pushes to ECR, and deploys with Helm |
-> | GitOps (Argo CD) | [`gitoops`](https://github.com/uzobola/eks-kubernetes-cicd-platform/tree/gitops) | GitHub Actions authenticates with OIDC, pushes the image, and commits the new tag to Helm values; Argo CD reconciles the cluster from Git |
+> | GitOps (Argo CD) | [`gitops`](https://github.com/uzobola/eks-kubernetes-cicd-platform/tree/gitops) | GitHub Actions authenticates with OIDC, pushes the image, and commits the new tag to Helm values; Argo CD reconciles the cluster from Git |
 >
 
 ---
@@ -482,7 +482,7 @@ Application health endpoint                     PASS
 HPA 1 → 3 → 1                                   PASS
 Cluster Autoscaler 1 → 2 → 1                    PASS
 
-Checkov 276 passed / 0 failed                   PASS
+Checkov 311 passed / 0 failed                   PASS
 Trivy HIGH/CRITICAL gate                        PASS
 
 Jenkins full CI/CD pipeline                     PASS

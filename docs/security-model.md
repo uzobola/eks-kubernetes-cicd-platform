@@ -630,7 +630,7 @@ Terraform is scanned with Checkov before deployment.
 Final security-gate state:
 
 ```text
-Passed checks: 276
+Passed checks: 311
 Failed checks: 0
 Skipped checks: 17
 ```

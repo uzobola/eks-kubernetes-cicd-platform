@@ -1054,7 +1054,7 @@ Run Checkov against the Terraform configuration.
 Expected project baseline:
 
 ```text
-Passed:  276
+Passed:  311
 Failed:  0
 Skipped: 17
 ```
