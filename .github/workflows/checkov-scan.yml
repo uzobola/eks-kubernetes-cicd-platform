@@ -1,4 +1,5 @@
 name: checkov-scan
+
 on: workflow_dispatch
 permissions:
   contents: read
@@ -11,6 +12,6 @@ jobs:
         with:
           python-version: "3.12"
       - name: Install Checkov
-        run: pip install checkov
+        run: pip install checkov==3.3.8
       - name: Checkov (Terraform)
         run: checkov --directory terraform --framework terraform --compact
